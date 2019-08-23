@@ -1,0 +1,23 @@
+{
+  "title": "White Board Widget",
+  "version": "1.0.0",
+  "iconImage": "widget-ico.png",
+  "permissions": [],
+  "app": {
+    "tag": null,
+    "bootstrapModule": null
+  },
+  "widgets": [
+    {
+      "tag": "white-board-widget",
+      "title": "White Board Widget",
+      "bootstrapModule": "white-board-widget.js",
+      "iconImage": "widget-ico.png",
+      "descriptionFull": "White Board Widget",
+      "descriptionShort": "White Board Widget",
+      "customId": "1"
+    }
+  ],
+  "apiCalls": [],
+  "description": "White Board Widget"
+}
