@@ -1,22 +1,22 @@
-import { SET_COMPONENT, SET_CANVAS } from '../actions';
+import { SET_SELECTED_TOOL, SET_SELECTED_COLOR } from '../actions';
 
 const initialState = {
-  component: null,
-  canvas: null
+  tool: null,
+  color: '#000'
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case SET_COMPONENT:
+    case SET_SELECTED_TOOL:
       return {
         ...state,
-        component: action.component
+        tool: action.tool
       };
 
-    case SET_CANVAS:
+    case SET_SELECTED_COLOR:
       return {
         ...state,
-        canvas: action.canvas
+        color: action.color
       };
 
     default:

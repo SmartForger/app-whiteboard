@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { fabric } from 'fabric';
+import { setCanvas } from '../store/actions';
 
 class Canvas extends Component {
   constructor(props) {
@@ -22,12 +24,13 @@ class Canvas extends Component {
 
     // "add" rectangle onto canvas
     this.canvas.add(rect);
+    this.props.setCanvas(this.canvas);
   }
 
-  fitToContainer(canvas){
-    canvas.style.width ='100%';
-    canvas.style.height='100%';
-    canvas.width  = canvas.offsetWidth;
+  fitToContainer(canvas) {
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
   }
 
@@ -36,4 +39,11 @@ class Canvas extends Component {
   }
 }
 
-export default Canvas;
+const mapDispatchToProps = dispatch => ({
+  setCanvas: canvas => dispatch(setCanvas(canvas))
+});
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(Canvas);
