@@ -2,8 +2,15 @@ import React, { Component } from 'react';
 import { fabric } from 'fabric';
 
 class Canvas extends Component {
+  constructor(props) {
+    super(props);
+
+    this.canvasRef = React.createRef();
+  }
+
   componentDidMount() {
-    this.canvas = new fabric.Canvas('main-canvas');
+    this.fitToContainer(this.canvasRef.current);
+    this.canvas = new fabric.Canvas(this.canvasRef.current);
     // create a rectangle object
     var rect = new fabric.Rect({
       left: 100,
@@ -17,8 +24,15 @@ class Canvas extends Component {
     this.canvas.add(rect);
   }
 
+  fitToContainer(canvas){
+    canvas.style.width ='100%';
+    canvas.style.height='100%';
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+
   render() {
-    return <canvas id="main-canvas" />;
+    return <canvas ref={this.canvasRef} />;
   }
 }
 
