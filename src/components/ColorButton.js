@@ -6,7 +6,7 @@ import PaletteIcon from '@material-ui/icons/Palette';
 import AddIcon from '@material-ui/icons/Add';
 import ExpandableButton from './ExpandableButton';
 import { PREDEFINED_COLOR_LIST } from '../constants';
-import { setSelectedColor } from '../store/actions/toolbar';
+import { setSelectedColor } from '../store/actions';
 
 export const ColorButton = ({
   expanded,
@@ -53,7 +53,7 @@ ColorButton.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  selectedColor: state.toolbar.color
+  selectedColor: state.canvas.color
 });
 
 const mapDispatchToProps = dispatch => ({

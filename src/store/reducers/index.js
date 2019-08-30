@@ -2,10 +2,10 @@ import { combineReducers } from 'redux';
 
 import ui from './ui';
 import component from './component';
-import toolbar from './toolbar';
+import canvas from './canvas';
 
 export default combineReducers({
   ui,
   component,
-  toolbar
+  canvas
 });

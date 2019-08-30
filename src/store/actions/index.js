@@ -1,3 +1,3 @@
 export * from './ui';
 export * from './component';
-export * from './toolbar';
+export * from './canvas';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fabric } from 'fabric';
-import { setCanvas } from '../store/actions';
+import { setCanvas, deleteObject } from '../store/actions';
 
 class Canvas extends Component {
   constructor(props) {
@@ -13,17 +13,6 @@ class Canvas extends Component {
   componentDidMount() {
     this.fitToContainer(this.canvasRef.current);
     this.canvas = new fabric.Canvas(this.canvasRef.current);
-    // create a rectangle object
-    var rect = new fabric.Rect({
-      left: 100,
-      top: 100,
-      fill: 'red',
-      width: 20,
-      height: 20
-    });
-
-    // "add" rectangle onto canvas
-    this.canvas.add(rect);
     this.props.setCanvas(this.canvas);
   }
 
@@ -34,13 +23,24 @@ class Canvas extends Component {
     canvas.height = canvas.offsetHeight;
   }
 
+  handleKeyUp = ev => {
+    if (ev.code === 'Delete') {
+      this.props.deleteObject();
+    }
+  };
+
   render() {
-    return <canvas ref={this.canvasRef} />;
+    return (
+      <div tabIndex={1} style={{ height: '100%' }} onKeyUp={this.handleKeyUp}>
+        <canvas ref={this.canvasRef} />
+      </div>
+    );
   }
 }
 
 const mapDispatchToProps = dispatch => ({
-  setCanvas: canvas => dispatch(setCanvas(canvas))
+  setCanvas: canvas => dispatch(setCanvas(canvas)),
+  deleteObject: () => dispatch(deleteObject())
 });
 
 export default connect(

@@ -4,13 +4,14 @@ import cls from 'classnames';
 import { Paper, IconButton } from '@material-ui/core';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import UndoIcon from '@material-ui/icons/Undo';
-import EditIcon from '@material-ui/icons/Edit';
-import CropSquareIcon from '@material-ui/icons/CropSquare';
 import TextFieldsIcon from '@material-ui/icons/TextFields';
 import NoteIcon from '@material-ui/icons/Note';
 import AddIcon from '@material-ui/icons/Add';
 import { setSelectedTool } from '../store/actions';
 import ColorButton from './ColorButton';
+import PencilButton from './PencilButton';
+import EraserButton from './EraserButton';
+import ShapesButton from './ShapesButton';
 
 class Toolbar extends Component {
   constructor(props) {
@@ -21,85 +22,81 @@ class Toolbar extends Component {
     };
   }
 
-  handleSubmenuOpen = i => () => {
+  handleSubmenuOpen = i => tool => {
     const { expanded } = this.state;
-    const { selectTool } = this.props;
 
     if (expanded === i) {
       this.setState({
         expanded: -1
       });
-      selectTool(0);
     } else {
       this.setState({
         expanded: i
       });
-      if (i === 1) {
-        selectTool(3);
-      }
+    }
+    if (typeof tool === 'number') {
+      this.props.selectTool(tool);
     }
   };
 
-  handleCursorClick = () => {
-    this.props.selectTool(1);
-  };
-
-  handleUndoClick = () => {
-    console.log('undo');
-  };
-
-  handleTextClick = () => {
-    this.props.selectTool(11);
-  };
-
-  handleNoteClick = () => {
-    this.props.selectTool(12);
-  };
-
-  handleInsertClick = () => {
-    this.props.selectTool(13);
+  handleToolClick = tool => () => {
+    const { selectTool } = this.props;
+    selectTool(tool);
   };
 
   render() {
     const { expanded } = this.state;
+    const { selectedTool } = this.props;
 
     return (
       <Paper className="toolbar" elevation={1}>
-        <IconButton size="small" onClick={this.handleCursorClick}>
+        <IconButton
+          className={cls({ expanded: selectedTool === 1 })}
+          size="small"
+          onClick={this.handleToolClick(1)}
+        >
           <NearMeIcon />
         </IconButton>
-        <IconButton size="small" onClick={this.handleUndoClick}>
+        <IconButton size="small" onClick={this.handleToolClick(2)}>
           <UndoIcon />
         </IconButton>
         <ColorButton
           expanded={expanded === 0}
           onExpand={this.handleSubmenuOpen(0)}
         />
+        <PencilButton
+          tool={selectedTool}
+          expanded={expanded === 1}
+          onExpand={this.handleSubmenuOpen(1)}
+          onButtonClick={this.handleToolClick}
+        />
+        <EraserButton
+          tool={selectedTool}
+          expanded={expanded === 2}
+          onExpand={this.handleSubmenuOpen(2)}
+          onButtonClick={this.handleToolClick}
+        />
+        <ShapesButton
+          tool={selectedTool}
+          expanded={expanded === 3}
+          onExpand={this.handleSubmenuOpen(3)}
+          onButtonClick={this.handleToolClick}
+        />
         <IconButton
+          className={cls({ expanded: selectedTool === 12 })}
           size="small"
-          className={cls('expandable', {
-            expanded: expanded === 1
-          })}
-          onClick={this.handleSubmenuOpen(1)}
+          onClick={this.handleToolClick(12)}
         >
-          <EditIcon />
-        </IconButton>
-        <IconButton
-          size="small"
-          className={cls('expandable', {
-            expanded: expanded === 2
-          })}
-          onClick={this.handleSubmenuOpen(2)}
-        >
-          <CropSquareIcon />
-        </IconButton>
-        <IconButton size="small" onClick={this.handle}>
           <TextFieldsIcon />
         </IconButton>
-        <IconButton size="small">
+        <IconButton
+          className={cls({ expanded: selectedTool === 13 })}
+          size="small"
+          onClick={this.handleToolClick(13)}
+        >
           <NoteIcon />
         </IconButton>
-        <IconButton size="small">
+        <IconButton size="small" onClick={this.handleToolClick(14)}>
           <AddIcon />
         </IconButton>
       </Paper>
@@ -108,7 +105,7 @@ class Toolbar extends Component {
 }
 
 const mapStateToProps = state => ({
-  selectedTool: state.toolbar.tool
+  selectedTool: state.canvas.tool
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -1,4 +1,4 @@
-import { SET_COMPONENT, SET_CANVAS } from '../actions';
+import { SET_COMPONENT } from '../actions';
 
 const initialState = {
   component: null,
@@ -11,12 +11,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         component: action.component
-      };
-
-    case SET_CANVAS:
-      return {
-        ...state,
-        canvas: action.canvas
       };
 
     default:
