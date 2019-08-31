@@ -11,9 +11,23 @@ class Canvas extends Component {
   }
 
   componentDidMount() {
+    const { setCanvas, webComponent } = this.props;
     this.fitToContainer(this.canvasRef.current);
     this.canvas = new fabric.Canvas(this.canvasRef.current);
-    this.props.setCanvas(this.canvas);
+    setCanvas(this.canvas);
+
+    if (webComponent) {
+      webComponent.dispatchEvent(new CustomEvent("onResizeCallback", {
+        detail: {
+          callback: () => {
+            const canvasEl = this.canvasRef.current;
+            this.canvas.setWidth(canvasEl.clientWidth);
+            this.canvas.setHeight(canvasEl.clientHeight);
+            this.canvas.renderAll();
+          }
+        }
+      }))
+    }
   }
 
   fitToContainer(canvas) {
@@ -38,12 +52,16 @@ class Canvas extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  webComponent: state.component.component
+});
+
 const mapDispatchToProps = dispatch => ({
   setCanvas: canvas => dispatch(setCanvas(canvas)),
   deleteObject: () => dispatch(deleteObject())
 });
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(Canvas);
