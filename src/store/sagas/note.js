@@ -118,6 +118,7 @@ function handleInputBlur() {
 
   const group = new fabric.Group([note, measureText], {
     selectable: false,
+    hasControls: false,
     objType: 'note'
   });
   _canvas.add(group);

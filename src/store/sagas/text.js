@@ -33,7 +33,8 @@ function handleInputBlur() {
         fontFamily: 'Roboto, sans-serif',
         fontSize: textSize,
         fontWeight: 400,
-        fill: textColor
+        fill: textColor,
+        hasControls: false
       });
       _canvas.add(text);
 
