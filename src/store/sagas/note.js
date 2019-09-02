@@ -9,6 +9,7 @@ import {
 } from '../actions';
 import { fabric } from 'fabric';
 import { disableSelection } from './utils';
+import { splitAndMeasureBy } from '../../utils';
 
 let _canvas = null;
 let textSize = 16;
@@ -33,6 +34,8 @@ function handleMouseDown({ pointer }) {
     startPoint = pointer;
     _canvas.add(note);
     drawing = true;
+
+    console.log('mouse down');
   }
 }
 
@@ -45,6 +48,7 @@ function handleMouseMove({ pointer }) {
       height: Math.abs(pointer.y - startPoint.y)
     });
     _canvas.renderAll();
+    console.log('mouse move');
   }
 }
 
@@ -57,6 +61,7 @@ function handleMouseUp({ pointer }) {
       height: Math.abs(pointer.y - startPoint.y)
     };
     drawing = false;
+    console.log('mouse up');
 
     if (rect.width < 40 || rect.height < 40) {
       textArea.className = 'textarea hidden';
@@ -82,29 +87,46 @@ function handleMouseUp({ pointer }) {
 }
 
 function handleInputBlur() {
-  setTimeout(() => {
-    _canvas.remove(note);
+  const opt = {
+    left: rect.left + 16,
+    top: rect.top + 16,
+    width: rect.width - 32,
+    height: rect.height - 32,
+    fontSize: textSize,
+    fontFamily: 'Roboto',
+    fill: textColor
+  };
 
-    const textbox = new fabric.Textbox(textArea.value, {
-      left: rect.left + 16,
-      top: rect.top + 16,
-      width: rect.width - 32,
-      height: rect.height - 32,
-      fontSize: textSize,
-      fontFamily: 'arial',
-      fill: textColor
+  let lines = textArea.value.split('\n');
+  let c = lines.length;
+  let w = rect.width - 32;
+  const measureText = new fabric.Text('', opt);
+  for (let i = 0; i < c; i++) {
+    measureText.set({
+      text: lines[i]
     });
+    let m = measureText.measureLine(0);
+    if (m.width <= w) {
+      continue;
+    }
 
-    const group = new fabric.Group([note, textbox], {
-      selectable: false,
-      objType: 'note'
-    });
-    _canvas.add(group);
+    let splitted = splitAndMeasureBy(measureText, lines[i], w, ' ');
+    lines.splice(i, 1, ...splitted);
+  }
 
-    textArea.className = 'textarea hidden';
+  measureText.text = lines.join('\n');
 
-    note = null;
-  }, 200);
+  const group = new fabric.Group([note, measureText], {
+    selectable: false,
+    objType: 'note'
+  });
+  _canvas.add(group);
+  _canvas.remove(note);
+
+  textArea.className = 'textarea hidden';
+
+  note = null;
+  console.log('blur');
 }
 
 function* selectTool(action) {
@@ -114,6 +136,7 @@ function* selectTool(action) {
     _canvas.off('mouse:up', handleMouseUp);
 
     if (action.tool === 13) {
+      _canvas.isDrawingMode = false;
       _canvas.on('mouse:down', handleMouseDown);
       _canvas.on('mouse:move', handleMouseMove);
       _canvas.on('mouse:up', handleMouseUp);
