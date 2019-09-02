@@ -9,6 +9,7 @@ import {
 } from '../actions';
 
 let eraserBrush = null;
+let _canvas = null;
 
 function* selectTool(action) {
   const {
@@ -18,6 +19,8 @@ function* selectTool(action) {
   if (instance) {
     if (action.tool === 7) {
       console.log('select eraser tool');
+      _canvas.isDrawing = true;
+      _canvas.freeDrawingBrush = eraserBrush;
     }
   }
 }
@@ -42,6 +45,9 @@ function* initCanvas({ canvas }) {
   eraserBrush = new fabric.PencilBrush(canvas);
   eraserBrush.color = '#000';
   eraserBrush.width = eraserSize;
+  eraserBrush.globalCompositeOperation = 'destination-out';
+
+  _canvas = canvas;
 }
 
 function* setEraserSize({ size }) {

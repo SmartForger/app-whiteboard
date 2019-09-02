@@ -107,25 +107,9 @@
   background-color: #f2f2f2 !important;
 }
 
-.predefined-colors {
-  width: 256px;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  flex-wrap: wrap;
-
-  .color {
-    width: 24px;
-    height: 24px;
-    margin: 4px;
-    border-radius: 50% !important;
-  }
-
-  .color-add {
-    margin: 4px;
-    padding: 0;
-    border: 2px solid transparent;
-  }
+.sketch-picker {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .color-button-icon {
@@ -145,7 +129,9 @@
 
 .pencil-tools,
 .eraser-tools,
-.shape-tools {
+.shape-tools,
+.text-tools,
+.note-tools {
   .MuiIconButton-root {
     margin-right: 8px;
     &:last-child {
@@ -154,6 +140,7 @@
   }
   .main {
     padding: 4px 8px;
+    box-sizing: border-box;
   }
   .secondary {
     border-top: 1px solid rgba(0, 0, 0, 0.2);
@@ -168,8 +155,11 @@
   }
 }
 
-.eraser-tools .main {
-  width: 120px;
+.eraser-tools,
+.text-tools {
+  .main {
+    width: 200px;
+  }
 }
 
 .shape {
@@ -194,4 +184,32 @@
 canvas, .canvas-container {
   width: 100% !important;
   height: 100% !important;
+}
+
+.canvas-container {
+  .itext {
+    position: absolute;
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+    line-height: 1.32em;
+    margin-top: -0.1em;
+  }
+  .textarea {
+    position: absolute;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 16px;
+    box-sizing: border-box;
+    font-family: arial;
+    line-height: 1.32em;
+    margin-top: -0.1em;
+    color: white;
+  }
+}
+
+.note-tools .predefined-colors {
+  padding: 0;
 }

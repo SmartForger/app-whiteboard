@@ -3,8 +3,10 @@ import { takeEvery, select } from 'redux-saga/effects';
 import { SET_SELECTED_TOOL } from '../actions';
 import { enableSelection } from './utils';
 
-function handleSelection(ev) {
-  console.log(ev);
+function handleMouseDblClick({ target }) {
+  if (target && target.objType === 'note') {
+    
+  }
 }
 
 function* selectTool(action) {
@@ -13,11 +15,12 @@ function* selectTool(action) {
   } = yield select();
 
   if (instance) {
-    instance.off('selection:created', handleSelection);
+    instance.off('mouse:dblclick', handleMouseDblClick);
+
     if (action.tool === 1) {
-      instance.on('selection:created', handleSelection);
       instance.isDrawingMode = false;
       enableSelection(instance);
+      instance.on('mouse:dblclick', handleMouseDblClick);
     }
   }
 }

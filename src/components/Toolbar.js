@@ -4,14 +4,14 @@ import cls from 'classnames';
 import { Paper, IconButton } from '@material-ui/core';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import UndoIcon from '@material-ui/icons/Undo';
-import TextFieldsIcon from '@material-ui/icons/TextFields';
-import NoteIcon from '@material-ui/icons/Note';
-import AddIcon from '@material-ui/icons/Add';
 import { setSelectedTool } from '../store/actions';
 import ColorButton from './ColorButton';
 import PencilButton from './PencilButton';
 import EraserButton from './EraserButton';
 import ShapesButton from './ShapesButton';
+import TextButton from './TextButton';
+import ImageButton from './ImageButton';
+import NoteButton from './NoteButton';
 
 class Toolbar extends Component {
   constructor(props) {
@@ -42,6 +42,10 @@ class Toolbar extends Component {
   handleToolClick = tool => () => {
     const { selectTool } = this.props;
     selectTool(tool);
+  };
+
+  handleImageInsert = image => {
+    this.props.selectTool(14, image);
   };
 
   render() {
@@ -82,23 +86,18 @@ class Toolbar extends Component {
           onExpand={this.handleSubmenuOpen(3)}
           onButtonClick={this.handleToolClick}
         />
-        <IconButton
-          className={cls({ expanded: selectedTool === 12 })}
-          size="small"
-          onClick={this.handleToolClick(12)}
-        >
-          <TextFieldsIcon />
-        </IconButton>
-        <IconButton
-          className={cls({ expanded: selectedTool === 13 })}
-          size="small"
-          onClick={this.handleToolClick(13)}
-        >
-          <NoteIcon />
-        </IconButton>
-        <IconButton size="small" onClick={this.handleToolClick(14)}>
-          <AddIcon />
-        </IconButton>
+        <TextButton
+          tool={selectedTool}
+          expanded={expanded === 4}
+          onExpand={this.handleSubmenuOpen(4)}
+          onButtonClick={this.handleToolClick}
+        />
+        <NoteButton
+          tool={selectedTool}
+          expanded={expanded === 5}
+          onExpand={this.handleSubmenuOpen(5)}
+        />
+        <ImageButton onSelectFile={this.handleImageInsert} />
       </Paper>
     );
   }
@@ -109,7 +108,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  selectTool: tool => dispatch(setSelectedTool(tool))
+  selectTool: (tool, payload) => dispatch(setSelectedTool(tool, payload))
 });
 
 export default connect(

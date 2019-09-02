@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { IconButton } from '@material-ui/core';
 import PaletteIcon from '@material-ui/icons/Palette';
-import AddIcon from '@material-ui/icons/Add';
 import ExpandableButton from './ExpandableButton';
-import { PREDEFINED_COLOR_LIST } from '../constants';
 import { setSelectedColor } from '../store/actions';
+import { SketchPicker } from 'react-color';
+import { PREDEFINED_COLOR_LIST } from '../constants';
 
 export const ColorButton = ({
   expanded,
@@ -27,23 +26,11 @@ export const ColorButton = ({
     expanded={expanded}
     onExpand={onExpand}
   >
-    <div className="predefined-colors">
-      {PREDEFINED_COLOR_LIST.map(color => (
-        <IconButton
-          key={color}
-          className="color"
-          style={{
-            backgroundColor: color
-          }}
-          onClick={() => {
-            changeColor(color);
-          }}
-        />
-      ))}
-      <IconButton size="small" className="color-add">
-        <AddIcon />
-      </IconButton>
-    </div>
+    <SketchPicker
+      color={selectedColor}
+      presetColors={PREDEFINED_COLOR_LIST}
+      onChangeComplete={color => changeColor(color.hex)}
+    />
   </ExpandableButton>
 );
 

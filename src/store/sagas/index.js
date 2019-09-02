@@ -1,13 +1,19 @@
 /* eslint-disable require-yield */
 import { fork } from 'redux-saga/effects';
-import eraseSagas from './erase';
-import penSagas from './pen';
-import shapeSagas from './shape';
-import selectSagas from './select';
+import eraseSaga from './erase';
+import penSaga from './pen';
+import shapeSaga from './shape';
+import selectSaga from './select';
+import textSaga from './text';
+import imageSaga from './image';
+import noteSaga from './note';
 
 export default function* rootSaga() {
-  yield fork(eraseSagas);
-  yield fork(penSagas);
-  yield fork(shapeSagas);
-  yield fork(selectSagas);
+  yield fork(eraseSaga);
+  yield fork(penSaga);
+  yield fork(shapeSaga);
+  yield fork(selectSaga);
+  yield fork(textSaga);
+  yield fork(imageSaga);
+  yield fork(noteSaga);
 }
