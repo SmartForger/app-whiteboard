@@ -37,7 +37,5 @@ export const splitAndMeasureBy = (ftext, line, width, splitChar) => {
     splitted.push(prevTempLine);
   }
 
-  console.log('splitted: ', splitted)
-
   return splitted;
 };

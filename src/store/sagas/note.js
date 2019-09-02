@@ -129,17 +129,45 @@ function handleInputBlur() {
   console.log('blur');
 }
 
+function handleDbClick({ target }) {
+  if (target && target.objType === 'note') {
+    note = target._objects[0];
+    target._restoreObjectsState();
+    rect = {
+      left: note.left,
+      top: note.top,
+      width: note.width,
+      height: note.height
+    };
+    textArea.className = 'textarea';
+    textArea.style = `
+      left: ${rect.left}px;
+      top: ${rect.top}px;
+      width: ${rect.width}px;
+      height: ${rect.height}px;
+      font-size: ${textSize}px;
+      color: ${textColor};
+    `;
+    textArea.value = target._objects[1].text;
+    textArea.focus();
+    _canvas.remove(target);
+    _canvas.add(note);
+  }
+}
+
 function* selectTool(action) {
   if (_canvas) {
     _canvas.off('mouse:down', handleMouseDown);
     _canvas.off('mouse:move', handleMouseMove);
     _canvas.off('mouse:up', handleMouseUp);
+    _canvas.off('mouse:dblclick', handleDbClick);
 
     if (action.tool === 13) {
       _canvas.isDrawingMode = false;
       _canvas.on('mouse:down', handleMouseDown);
       _canvas.on('mouse:move', handleMouseMove);
       _canvas.on('mouse:up', handleMouseUp);
+      _canvas.on('mouse:dblclick', handleDbClick);
       disableSelection(_canvas);
     }
   }
