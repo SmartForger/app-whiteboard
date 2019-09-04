@@ -8,7 +8,10 @@ export const disableSelection = canvas => {
 export const enableSelection = canvas => {
   canvas.selection = true;
   canvas.forEachObject(function(o) {
-    o.selectable = true;
+    console.log(o.objectType)
+    if (o.objType !== 'eraser') {
+      o.selectable = true;
+    }
   });
   canvas.renderAll();
 };

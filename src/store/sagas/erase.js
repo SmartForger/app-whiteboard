@@ -11,16 +11,31 @@ import {
 let eraserBrush = null;
 let _canvas = null;
 
+function handlePathCreated({ path }) {
+  path.set({
+    objType: 'eraser',
+    selectable: false,
+    hasControls: false,
+    lockMovementX: true,
+    lockMovementY: true,
+    evented: false
+  });
+  _canvas.renderAll();
+}
+
 function* selectTool(action) {
   const {
     canvas: { instance }
   } = yield select();
 
   if (instance) {
+    instance.off('path:created', handlePathCreated);
+    instance.discardActiveObject();
+
     if (action.tool === 7) {
-      console.log('select eraser tool');
-      _canvas.isDrawing = true;
+      _canvas.isDrawingMode = true;
       _canvas.freeDrawingBrush = eraserBrush;
+      instance.on('path:created', handlePathCreated);
     }
   }
 }
@@ -43,7 +58,7 @@ function* initCanvas({ canvas }) {
   } = yield select();
 
   eraserBrush = new fabric.PencilBrush(canvas);
-  eraserBrush.color = '#000';
+  eraserBrush.color = '#fff';
   eraserBrush.width = eraserSize;
   eraserBrush.globalCompositeOperation = 'destination-out';
 

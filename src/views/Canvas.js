@@ -14,7 +14,9 @@ class Canvas extends Component {
     setTimeout(() => {
       const { setCanvas, webComponent } = this.props;
       this.fitToContainer(this.canvasRef.current);
-      this.canvas = new fabric.Canvas(this.canvasRef.current);
+      this.canvas = new fabric.Canvas(this.canvasRef.current, {
+        preserveObjectStacking: true
+      });
       setCanvas(this.canvas);
 
       if (webComponent) {
