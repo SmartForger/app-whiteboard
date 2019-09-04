@@ -8,6 +8,7 @@ import {
   SET_SELECTED_COLOR
 } from '../actions';
 import { disableSelection } from './utils';
+import { saveHistory } from './history';
 
 let penBrush = null;
 let tempLine = null;
@@ -100,6 +101,11 @@ function arrowPathCreated(ev) {
   }
 
   addArrow(ev.path, arr[i][1], arr[i][2], lastP[1], lastP[2]);
+  saveHistory(_canvas);
+}
+
+function normalPathCreated(o) {
+  saveHistory(_canvas);
 }
 
 function handleMouseDown(o) {
@@ -136,6 +142,8 @@ function handleMouseUp(o) {
       opacity: 1
     });
     _canvas.renderAll();
+    console.log('line added');
+    saveHistory(_canvas);
   }
   tempLine = null;
 }
@@ -150,6 +158,7 @@ function handleMouseUpArrow(o) {
       opacity: 1
     });
     addArrow(tempLine, startPoint.x, startPoint.y, pointer.x, pointer.y);
+    saveHistory(_canvas);
   }
   tempLine = null;
 }
@@ -161,6 +170,7 @@ function* selectTool(action) {
 
   if (instance) {
     instance.off('path:created', arrowPathCreated);
+    instance.off('path:created', normalPathCreated);
     instance.off('mouse:down', handleMouseDown);
     instance.off('mouse:move', handleMouseMove);
     instance.off('mouse:up', handleMouseUp);
@@ -170,6 +180,7 @@ function* selectTool(action) {
       case 3:
         instance.freeDrawingBrush = penBrush;
         instance.isDrawingMode = true;
+        instance.on('path:created', normalPathCreated);
         break;
       case 4:
         instance.freeDrawingBrush = penBrush;

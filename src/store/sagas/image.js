@@ -2,6 +2,7 @@
 import { takeEvery, select } from 'redux-saga/effects';
 import { SET_SELECTED_TOOL } from '../actions';
 import { fabric } from 'fabric';
+import { saveHistory } from './history';
 
 function* selectTool(action) {
   const {
@@ -12,6 +13,7 @@ function* selectTool(action) {
     if (action.tool === 14) {
       fabric.Image.fromURL(action.payload, function(img) {
         instance.add(img);
+        saveHistory(instance);
       });
     }
   }

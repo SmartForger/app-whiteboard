@@ -8,6 +8,7 @@ import {
   SET_SHAPE_STROKE_SIZE
 } from '../actions';
 import { disableSelection } from './utils';
+import { saveHistory } from './history';
 
 let shapeBrush = null;
 let _canvas = null;
@@ -57,7 +58,7 @@ function handleMouseDown(o) {
         strokeWidth: shapeBrush.width,
         stroke: shapeBrush.color,
         fill: 'transparent',
-        opacity: 0.4,
+        opacity: 0.4
       });
       break;
     case 11:
@@ -68,7 +69,7 @@ function handleMouseDown(o) {
         ry: 0,
         strokeWidth: 0,
         fill: shapeBrush.color,
-        opacity: 0.4,
+        opacity: 0.4
       });
       break;
     default:
@@ -78,10 +79,10 @@ function handleMouseDown(o) {
   _canvas.add(tempShape);
 }
 
-function handleMouseMove(o) {
-  if (tempShape) {
-    var pointer = _canvas.getPointer(o.e);
+function moveShape(o) {
+  var pointer = _canvas.getPointer(o.e);
 
+  if (tempShape && startPoint.x !== pointer.x && startPoint.y !== pointer.y) {
     switch (shapeType) {
       case 8:
       case 9:
@@ -109,12 +110,19 @@ function handleMouseMove(o) {
   }
 }
 
+function handleMouseMove(o) {
+  moveShape(o);
+}
+
 function handleMouseUp(o) {
+  moveShape(o);
   tempShape.set({
     opacity: 1
   });
   _canvas.renderAll();
   tempShape = null;
+
+  saveHistory(_canvas);
 }
 
 function* selectTool(action) {

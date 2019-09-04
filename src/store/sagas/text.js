@@ -7,6 +7,7 @@ import {
   SET_SELECTED_COLOR
 } from '../actions';
 import { fabric } from 'fabric';
+import { saveHistory } from './history';
 
 let _canvas = null;
 let inputEl = null;
@@ -41,6 +42,8 @@ function handleInputBlur() {
       textPoint = null;
       inputEl.className = 'itext hidden';
       inputEl.value = '';
+
+      saveHistory(_canvas);
     }, 200);
   }
 }

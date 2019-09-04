@@ -12,7 +12,6 @@ export const enableSelection = canvas => {
   canvas.selection = true;
   canvas.forEachObject(function(o) {
     if (o.objType !== 'eraser' && !o.erased) {
-      console.log(o);
       o.set({
         selectable: true
       });

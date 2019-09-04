@@ -8,6 +8,7 @@ import {
   SET_ERASER_SIZE
 } from '../actions';
 import { disableSelection } from './utils';
+import { saveHistory } from './history';
 
 let eraserBrush = null;
 let _canvas = null;
@@ -18,8 +19,7 @@ function handlePathCreated({ path }) {
     selectable: false,
     hasControls: false,
     lockMovementX: true,
-    lockMovementY: true,
-    evented: false
+    lockMovementY: true
   });
 
   _canvas.forEachObject(o => {
@@ -29,6 +29,8 @@ function handlePathCreated({ path }) {
   });
 
   _canvas.renderAll();
+
+  saveHistory(_canvas);
 }
 
 function* selectTool(action) {
@@ -58,6 +60,7 @@ function* deleteObject() {
     instance.getActiveObjects().forEach(obj => {
       instance.remove(obj);
     });
+    saveHistory(_canvas);
   }
 }
 

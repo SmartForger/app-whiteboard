@@ -10,6 +10,7 @@ import {
 import { fabric } from 'fabric';
 import { disableSelection } from './utils';
 import { splitAndMeasureBy } from '../../utils';
+import { saveHistory } from './history';
 
 let _canvas = null;
 let textSize = 16;
@@ -125,7 +126,8 @@ function handleInputBlur() {
   textArea.className = 'textarea hidden';
 
   note = null;
-  console.log('blur');
+
+  saveHistory(_canvas);
 }
 
 function handleDbClick({ target }) {
