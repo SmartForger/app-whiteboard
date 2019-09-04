@@ -1,16 +1,22 @@
 export const disableSelection = canvas => {
   canvas.selection = false;
   canvas.forEachObject(function(o) {
-    o.selectable = false;
+    o.set({
+      selectable: false
+    });
   });
+  canvas.renderAll();
 };
 
 export const enableSelection = canvas => {
   canvas.selection = true;
   canvas.forEachObject(function(o) {
-    console.log(o.objectType)
-    if (o.objType !== 'eraser') {
-      o.selectable = true;
+    if (o.objType !== 'eraser' && !o.erased) {
+      console.log(o);
+      o.set({
+        selectable: true
+      });
+      o.setCoords();
     }
   });
   canvas.renderAll();

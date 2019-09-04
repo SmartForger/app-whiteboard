@@ -5,8 +5,9 @@ import {
   SET_SELECTED_TOOL,
   DELETE_OBJECT,
   SET_CANVAS,
-  SET_ERASER_SIZE,
+  SET_ERASER_SIZE
 } from '../actions';
+import { disableSelection } from './utils';
 
 let eraserBrush = null;
 let _canvas = null;
@@ -20,6 +21,13 @@ function handlePathCreated({ path }) {
     lockMovementY: true,
     evented: false
   });
+
+  _canvas.forEachObject(o => {
+    o.set({
+      erased: true
+    });
+  });
+
   _canvas.renderAll();
 }
 
@@ -36,6 +44,7 @@ function* selectTool(action) {
       _canvas.isDrawingMode = true;
       _canvas.freeDrawingBrush = eraserBrush;
       instance.on('path:created', handlePathCreated);
+      disableSelection(_canvas);
     }
   }
 }

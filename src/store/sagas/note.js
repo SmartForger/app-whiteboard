@@ -34,8 +34,6 @@ function handleMouseDown({ pointer }) {
     startPoint = pointer;
     _canvas.add(note);
     drawing = true;
-
-    console.log('mouse down');
   }
 }
 
@@ -48,7 +46,6 @@ function handleMouseMove({ pointer }) {
       height: Math.abs(pointer.y - startPoint.y)
     });
     _canvas.renderAll();
-    console.log('mouse move');
   }
 }
 
@@ -61,7 +58,6 @@ function handleMouseUp({ pointer }) {
       height: Math.abs(pointer.y - startPoint.y)
     };
     drawing = false;
-    console.log('mouse up');
 
     if (rect.width < 40 || rect.height < 40) {
       textArea.className = 'textarea hidden';
@@ -124,6 +120,8 @@ function handleInputBlur() {
   _canvas.add(group);
   _canvas.remove(note);
 
+  group.setCoords();
+
   textArea.className = 'textarea hidden';
 
   note = null;
@@ -131,7 +129,7 @@ function handleInputBlur() {
 }
 
 function handleDbClick({ target }) {
-  if (target && target.objType === 'note') {
+  if (target && target.objType === 'note' && !target.erased) {
     note = target._objects[0];
     target._restoreObjectsState();
     rect = {
