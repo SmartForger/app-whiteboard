@@ -1,22 +1,20 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Toolbar from '../components/Toolbar';
 import Zoom from '../components/Zoom';
 import Viewport from '../components/Viewport';
 import ExportBoard from '../components/ExportBoard';
 import Canvas from './Canvas';
+import Minimap from './Minimap';
 
-class Main extends Component {
-  render() {
-    return (
-      <div className="main">
-        <Toolbar />
-        <Zoom />
-        <Viewport />
-        <ExportBoard />
-        <Canvas />
-      </div>
-    );
-  }
-}
+const Main = () => (
+  <div className="main">
+    <Toolbar />
+    <Zoom />
+    <Viewport />
+    <ExportBoard />
+    <Canvas />
+    <Minimap />
+  </div>
+);
 
 export default Main;

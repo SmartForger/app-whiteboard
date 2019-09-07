@@ -8,6 +8,7 @@ import textSaga from './text';
 import imageSaga from './image';
 import noteSaga from './note';
 import undoSaga from './undo';
+import zoomSaga from './zoom';
 
 export default function* rootSaga() {
   yield fork(eraseSaga);
@@ -18,4 +19,5 @@ export default function* rootSaga() {
   yield fork(imageSaga);
   yield fork(noteSaga);
   yield fork(undoSaga);
+  yield fork(zoomSaga);
 }

@@ -11,6 +11,7 @@ export const SET_SHAPE_STROKE_SIZE = 'SET_SHAPE_STROKE_SIZE';
 export const SET_TEXT_SIZE = 'SET_TEXT_SIZE';
 export const SET_BACKGROUND = 'SET_BACKGROUND';
 export const SET_COLORS = 'SET_COLORS';
+export const SET_ZOOM = 'SET_ZOOM';
 
 /**
  * Action Creators
@@ -63,4 +64,9 @@ export const setBackground = color => ({
 export const setColors = colors => ({
   type: SET_COLORS,
   colors
+});
+
+export const setZoom = zoom => ({
+  type: SET_ZOOM,
+  zoom
 });

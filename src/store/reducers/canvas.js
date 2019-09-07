@@ -7,7 +7,8 @@ import {
   SET_SHAPE_STROKE_SIZE,
   SET_TEXT_SIZE,
   SET_BACKGROUND,
-  SET_COLORS
+  SET_COLORS,
+  SET_ZOOM
 } from '../actions';
 import { PREDEFINED_COLOR_LIST } from '../../constants';
 
@@ -20,7 +21,8 @@ const initialState = {
   shapeStrokeSize: 5,
   textSize: 16,
   background: '#fff',
-  colors: PREDEFINED_COLOR_LIST
+  colors: PREDEFINED_COLOR_LIST,
+  zoom: 1
 };
 
 export default (state = initialState, action) => {
@@ -34,7 +36,7 @@ export default (state = initialState, action) => {
     case SET_SELECTED_TOOL:
       return {
         ...state,
-        tool: action.tool === 2 || action.tool === 14 ? state.tool : action.tool
+        tool: [2, 14].indexOf(action.tool) >= 0 ? state.tool : action.tool
       };
 
     case SET_SELECTED_COLOR:
@@ -77,6 +79,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         colors: action.colors
+      };
+
+    case SET_ZOOM:
+      return {
+        ...state,
+        zoom: action.zoom
       };
 
     default:

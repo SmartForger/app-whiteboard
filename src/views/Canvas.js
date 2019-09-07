@@ -15,7 +15,9 @@ class Canvas extends Component {
       const { setCanvas, webComponent } = this.props;
       this.fitToContainer(this.canvasRef.current);
       this.canvas = new fabric.Canvas(this.canvasRef.current, {
-        preserveObjectStacking: true
+        preserveObjectStacking: true,
+        perPixelTargetFind: true,
+        skipOffscreen: false
       });
       setCanvas(this.canvas);
 

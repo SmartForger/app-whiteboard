@@ -1,8 +1,13 @@
-import { SET_VIEW, SET_CREATE_DIALOG } from '../actions/ui';
+import {
+  SET_VIEW,
+  SET_CREATE_DIALOG,
+  SET_MINIMAP_VISIBLE
+} from '../actions/ui';
 
 const initialState = {
   view: 0,
-  createDialogOpen: false
+  createDialogOpen: false,
+  minimap: false
 };
 
 export default (state = initialState, action) => {
@@ -17,6 +22,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         createDialogOpen: action.open
+      };
+
+    case SET_MINIMAP_VISIBLE:
+      return {
+        ...state,
+        minimap: action.visible
       };
 
     default:

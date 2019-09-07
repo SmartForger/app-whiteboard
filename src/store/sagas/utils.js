@@ -20,3 +20,45 @@ export const enableSelection = canvas => {
   });
   canvas.renderAll();
 };
+
+export const renderMinimap = canvas => {
+  const ratio = canvas.width / canvas.height;
+  const w = Math.floor(96 * ratio);
+  const minimapEl = canvas.wrapperEl.parentElement.parentElement.querySelector(
+    '.minimap'
+  );
+  minimapEl.style= `width: ${w + 2}px;`;
+  const bgEl = minimapEl.querySelector('.minimapBg')
+  
+  const transform = canvas.viewportTransform;
+  canvas.setZoom(1);
+  canvas.viewportTransform[4] = 0;
+  canvas.viewportTransform[5] = 0;
+  bgEl.innerHTML = canvas.toSVG({
+    width: w,
+    height: 96
+  });
+  canvas.viewportTransform = transform;
+  bgEl.style = `width: ${w}px;height: 96px;`;
+};
+
+export const updateMinimapRect = canvas => {
+  const minimapEl = canvas.wrapperEl.parentElement.parentElement.querySelector(
+    '.minimap'
+  );
+  const zoom = canvas.getZoom();
+  const rectEl = minimapEl.querySelector('.minimapRect');
+  const ratio = 96 / canvas.height;
+
+  const w = canvas.width * ratio / zoom;
+  const h = canvas.height * ratio / zoom;
+  const left = canvas.viewportTransform[4] * ratio / zoom;
+  const top = canvas.viewportTransform[5] * ratio / zoom;
+
+  rectEl.style = `
+    width: ${w}px;
+    height: ${h}px;
+    left: ${-left}px;
+    top: ${-top}px;
+  `;
+}

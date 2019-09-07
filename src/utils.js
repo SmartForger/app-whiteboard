@@ -20,7 +20,7 @@ export const splitAndMeasureBy = (ftext, line, width, splitChar) => {
         ];
       } else if (prevTempLine !== '') {
         splitted.push(prevTempLine);
-        i --;
+        i--;
       } else {
         splitted.push(tempLine);
       }

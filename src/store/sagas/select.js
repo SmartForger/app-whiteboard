@@ -16,17 +16,17 @@ function* selectTool(action) {
   } = yield select();
 
   if (instance) {
-    instance.off('object:modified', handleObjectModified);
+    instance.off('mouse:up', handleObjectModified);
 
     if (action.tool === 1) {
       _canvas = instance;
-      instance.on('object:modified', handleObjectModified);
+      instance.on('mouse:up', handleObjectModified);
       instance.isDrawingMode = false;
       enableSelection(instance);
     }
   }
 }
 
-export default function* selectSagas() {
+export default function* selectSaga() {
   yield takeEvery(SET_SELECTED_TOOL, selectTool);
 }

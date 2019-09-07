@@ -1,11 +1,12 @@
 /* eslint-disable require-yield */
-import { takeEvery, select } from 'redux-saga/effects';
-import { SET_SELECTED_TOOL } from '../actions';
+import { takeEvery, select, put } from 'redux-saga/effects';
+import { SET_SELECTED_TOOL, setSelectedTool } from '../actions';
 import { undo } from './history';
+import { renderMinimap } from './utils';
 
 function* selectTool(action) {
   const {
-    canvas: { instance }
+    canvas: { instance, tool }
   } = yield select();
 
   if (instance) {
@@ -16,10 +17,16 @@ function* selectTool(action) {
         let erased = false;
         for (let i = objects.length; i > 0; i--) {
           let obj = objects[i - 1];
-          if (erased && obj.erased) {
-            obj.set({
-              selectable: false
-            });
+          if (obj.erased) {
+            if (erased) {
+              obj.set({
+                selectable: false
+              });
+            } else {
+              obj.set({
+                erased: false
+              });
+            }
           }
           if (obj.objType === 'eraser') {
             erased = true;
@@ -30,13 +37,16 @@ function* selectTool(action) {
               lockMovementY: true
             });
           }
+
+          renderMinimap(instance);
         }
-        console.log(instance);
       });
+
+      yield put(setSelectedTool(tool));
     }
   }
 }
 
-export default function* selectSagas() {
+export default function* undoSaga() {
   yield takeEvery(SET_SELECTED_TOOL, selectTool);
 }
