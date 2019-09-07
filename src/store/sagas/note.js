@@ -1,5 +1,5 @@
 /* eslint-disable require-yield */
-import { takeEvery } from 'redux-saga/effects';
+import { takeEvery, select } from 'redux-saga/effects';
 import {
   SET_SELECTED_TOOL,
   SET_CANVAS,
@@ -12,91 +12,81 @@ import { disableSelection } from './utils';
 import { splitAndMeasureBy } from '../../utils';
 import { saveHistory } from './history';
 
-let _canvas = null;
-let textSize = 16;
-let textColor = '#000';
-let backgroundColor = '#fff';
-let note = null;
-let textArea = null;
-let startPoint = null;
-let rect = null;
-let drawing = false;
-
 function handleMouseDown({ pointer }) {
-  if (!note) {
-    note = new fabric.Rect({
+  if (!this.note && this.getZoom() === 1) {
+    this.note = new fabric.Rect({
       left: pointer.x,
       top: pointer.y,
       width: 0,
       height: 0,
       shadow: '0 0 10px #000000A0',
-      fill: backgroundColor
+      fill: this._bgColor
     });
-    startPoint = pointer;
-    _canvas.add(note);
-    drawing = true;
+    this.startPoint = pointer;
+    this.add(this.note);
+    this.drawing = true;
   }
 }
 
 function handleMouseMove({ pointer }) {
-  if (drawing) {
-    note.set({
-      left: Math.min(pointer.x, startPoint.x),
-      top: Math.min(pointer.y, startPoint.y),
-      width: Math.abs(pointer.x - startPoint.x),
-      height: Math.abs(pointer.y - startPoint.y)
+  if (this.drawing) {
+    this.note.set({
+      left: Math.min(pointer.x, this.startPoint.x),
+      top: Math.min(pointer.y, this.startPoint.y),
+      width: Math.abs(pointer.x - this.startPoint.x),
+      height: Math.abs(pointer.y - this.startPoint.y)
     });
-    _canvas.renderAll();
+    this.renderAll();
   }
 }
 
 function handleMouseUp({ pointer }) {
-  if (drawing) {
-    rect = {
-      left: Math.min(pointer.x, startPoint.x),
-      top: Math.min(pointer.y, startPoint.y),
-      width: Math.abs(pointer.x - startPoint.x),
-      height: Math.abs(pointer.y - startPoint.y)
+  if (this.drawing) {
+    this.rect = {
+      left: Math.min(pointer.x, this.startPoint.x),
+      top: Math.min(pointer.y, this.startPoint.y),
+      width: Math.abs(pointer.x - this.startPoint.x),
+      height: Math.abs(pointer.y - this.startPoint.y)
     };
-    drawing = false;
+    this.drawing = false;
 
-    if (rect.width < 40 || rect.height < 40) {
-      textArea.className = 'textarea hidden';
-      _canvas.remove(note);
-      note = null;
+    if (this.rect.width < 40 || this.rect.height < 40) {
+      this.textArea.className = 'textarea hidden';
+      this.remove(this.note);
+      this.note = null;
       return;
     }
 
-    note.set(rect);
-    _canvas.renderAll();
-    textArea.className = 'textarea';
-    textArea.style = `
-      left: ${rect.left}px;
-      top: ${rect.top}px;
-      width: ${rect.width}px;
-      height: ${rect.height}px;
-      font-size: ${textSize}px;
-      color: ${textColor};
+    this.note.set(this.rect);
+    this.renderAll();
+    this.textArea.className = 'textarea';
+    this.textArea.style = `
+      left: ${this.rect.left}px;
+      top: ${this.rect.top}px;
+      width: ${this.rect.width}px;
+      height: ${this.rect.height}px;
+      font-size: ${this.textSize}px;
+      color: ${this.textColor};
     `;
-    textArea.focus();
-    textArea.value = '';
+    this.textArea.focus();
+    this.textArea.value = '';
   }
 }
 
 function handleInputBlur() {
   const opt = {
-    left: rect.left + 16,
-    top: rect.top + 16,
-    width: rect.width - 32,
-    height: rect.height - 32,
-    fontSize: textSize,
+    left: this.canvas.rect.left + 16,
+    top: this.canvas.rect.top + 16,
+    width: this.canvas.rect.width - 32,
+    height: this.canvas.rect.height - 32,
+    fontSize: this.canvas.textSize,
     fontFamily: 'Roboto',
-    fill: textColor
+    fill: this.canvas.textColor
   };
 
-  let lines = textArea.value.split('\n');
+  let lines = this.value.split('\n');
   let c = lines.length;
-  let w = rect.width - 32;
+  let w = this.canvas.rect.width - 32;
   const measureText = new fabric.Text('', opt);
   for (let i = 0; i < c; i++) {
     measureText.set({
@@ -113,91 +103,114 @@ function handleInputBlur() {
 
   measureText.text = lines.join('\n');
 
-  const group = new fabric.Group([note, measureText], {
+  const group = new fabric.Group([this.canvas.note, measureText], {
     selectable: false,
     hasControls: false,
     objType: 'note'
   });
-  _canvas.add(group);
-  _canvas.remove(note);
+  this.canvas.add(group);
+  this.canvas.remove(this.canvas.note);
 
   group.setCoords();
 
-  textArea.className = 'textarea hidden';
+  this.className = 'textarea hidden';
 
-  note = null;
+  this.canvas.note = null;
 
-  saveHistory(_canvas);
+  saveHistory(this.canvas);
 }
 
 function handleDbClick({ target }) {
   if (target && target.objType === 'note' && !target.erased) {
-    note = target._objects[0];
+  this.note = target._objects[0];
     target._restoreObjectsState();
-    rect = {
-      left: note.left,
-      top: note.top,
-      width: note.width,
-      height: note.height
+    this.rect = {
+      left: this.note.left,
+      top: this.note.top,
+      width: this.note.width,
+      height: this.note.height
     };
-    textArea.className = 'textarea';
-    textArea.style = `
-      left: ${rect.left}px;
-      top: ${rect.top}px;
-      width: ${rect.width}px;
-      height: ${rect.height}px;
-      font-size: ${textSize}px;
-      color: ${textColor};
+    this.textArea.className = 'textarea';
+    this.textArea.style = `
+      left: ${this.rect.left}px;
+      top: ${this.rect.top}px;
+      width: ${this.rect.width}px;
+      height: ${this.rect.height}px;
+      font-size: ${this.textSize}px;
+      color: ${this.textColor};
     `;
-    textArea.value = target._objects[1].text;
-    textArea.focus();
-    _canvas.remove(target);
-    _canvas.add(note);
+    this.textArea.value = target._objects[1].text;
+    this.textArea.focus();
+    this.remove(target);
+    this.add(this.note);
   }
 }
 
 function* selectTool(action) {
-  if (_canvas) {
-    _canvas.off('mouse:down', handleMouseDown);
-    _canvas.off('mouse:move', handleMouseMove);
-    _canvas.off('mouse:up', handleMouseUp);
-    _canvas.off('mouse:dblclick', handleDbClick);
+  const {
+    canvas: { instance, background, color, textSize }
+  } = yield select();
+
+  if (instance) {
+    instance.off('mouse:down', handleMouseDown);
+    instance.off('mouse:move', handleMouseMove);
+    instance.off('mouse:up', handleMouseUp);
+    instance.off('mouse:dblclick', handleDbClick);
 
     if (action.tool === 13) {
-      _canvas.isDrawingMode = false;
-      _canvas.on('mouse:down', handleMouseDown);
-      _canvas.on('mouse:move', handleMouseMove);
-      _canvas.on('mouse:up', handleMouseUp);
-      _canvas.on('mouse:dblclick', handleDbClick);
-      disableSelection(_canvas);
+      instance.isDrawingMode = false;
+      instance.on('mouse:down', handleMouseDown);
+      instance.on('mouse:move', handleMouseMove);
+      instance.on('mouse:up', handleMouseUp);
+      instance.on('mouse:dblclick', handleDbClick);
+      disableSelection(instance);
+
+      instance.note = null;
+      instance.drawing = false;
+      instance.startPoint = null;
+      instance._bgColor = background;
+      instance.textColor = color;
+      instance.textSize = textSize;
     }
   }
 }
 
 function* initCanvas({ canvas }) {
-  _canvas = canvas;
-  textArea = document.createElement('textarea');
-  canvas.wrapperEl.append(textArea);
-  textArea.className = 'textarea hidden';
-  textArea.addEventListener('blur', handleInputBlur);
+  canvas.textArea = document.createElement('textarea');
+  canvas.wrapperEl.append(canvas.textArea);
+  canvas.textArea.className = 'textarea hidden';
+  canvas.textArea.canvas = canvas;
+  canvas.textArea.addEventListener('blur', handleInputBlur);
 }
 
 function* setTextSize({ size }) {
-  textSize = size;
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance.textSize = size;
 }
 
-function* setBacgkroundColor({ color }) {
-  backgroundColor = color;
+function* setBackgroundColor({ color }) {
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance._bgColor = color;
 }
 
 function* setTextColor({ color }) {
-  textColor = color;
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance.textColor = color;
 }
 
 export default function* imageSaga() {
   yield takeEvery(SET_SELECTED_TOOL, selectTool);
   yield takeEvery(SET_CANVAS, initCanvas);
   yield takeEvery(SET_TEXT_SIZE, setTextSize);
-  yield takeEvery(SET_BACKGROUND, setBacgkroundColor);
+  yield takeEvery(SET_BACKGROUND, setBackgroundColor);
   yield takeEvery(SET_SELECTED_COLOR, setTextColor);
 }

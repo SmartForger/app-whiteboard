@@ -4,7 +4,7 @@ import cls from 'classnames';
 import { Paper, IconButton } from '@material-ui/core';
 import NearMeIcon from '@material-ui/icons/NearMe';
 import UndoIcon from '@material-ui/icons/Undo';
-import { setSelectedTool } from '../store/actions';
+import { setSelectedTool, insertImage, undo } from '../store/actions';
 import ColorButton from './ColorButton';
 import PencilButton from './PencilButton';
 import EraserButton from './EraserButton';
@@ -44,13 +44,9 @@ class Toolbar extends Component {
     selectTool(tool);
   };
 
-  handleImageInsert = image => {
-    this.props.selectTool(14, image);
-  };
-
   render() {
     const { expanded } = this.state;
-    const { selectedTool } = this.props;
+    const { selectedTool, insertImage, undo } = this.props;
 
     return (
       <Paper className="toolbar" elevation={1}>
@@ -61,7 +57,7 @@ class Toolbar extends Component {
         >
           <NearMeIcon />
         </IconButton>
-        <IconButton size="small" onClick={this.handleToolClick(2)}>
+        <IconButton size="small" onClick={() => undo()}>
           <UndoIcon />
         </IconButton>
         <ColorButton
@@ -97,7 +93,7 @@ class Toolbar extends Component {
           expanded={expanded === 5}
           onExpand={this.handleSubmenuOpen(5)}
         />
-        <ImageButton onSelectFile={this.handleImageInsert} />
+        <ImageButton onSelectFile={insertImage} />
       </Paper>
     );
   }
@@ -108,7 +104,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  selectTool: (tool, payload) => dispatch(setSelectedTool(tool, payload))
+  selectTool: (tool, payload) => dispatch(setSelectedTool(tool, payload)),
+  insertImage: image => dispatch(insertImage(image)),
+  undo: () => dispatch(undo())
 });
 
 export default connect(

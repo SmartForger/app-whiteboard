@@ -36,7 +36,7 @@ export default (state = initialState, action) => {
     case SET_SELECTED_TOOL:
       return {
         ...state,
-        tool: [2, 14].indexOf(action.tool) >= 0 ? state.tool : action.tool
+        tool: action.tool
       };
 
     case SET_SELECTED_COLOR:

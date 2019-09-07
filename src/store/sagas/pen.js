@@ -10,14 +10,6 @@ import {
 import { disableSelection } from './utils';
 import { saveHistory } from './history';
 
-let penBrush = null;
-let tempLine = null;
-let _canvas = null;
-let startPoint = {
-  x: 0,
-  y: 0
-};
-
 function calcDistance(p0, p1) {
   return Math.sqrt(Math.pow(p0[1] - p1[1], 2) + Math.pow(p0[2] - p1[2], 2));
 }
@@ -43,8 +35,8 @@ function calcAngle(x1, y1, x2, y2) {
   return angle;
 }
 
-function addArrow(obj, x1, y1, x2, y2) {
-  const arrowSize = penBrush.width + 3;
+function addArrow(canvas, obj, x1, y1, x2, y2) {
+  const arrowSize = canvas.penBrush.width + 3;
 
   const arrow = new fabric.Polygon(
     [
@@ -56,7 +48,7 @@ function addArrow(obj, x1, y1, x2, y2) {
       left: x2,
       top: y2,
       angle: calcAngle(x1, y1, x2, y2),
-      fill: penBrush.color,
+      fill: canvas.penBrush.color,
       strokeWidth: 0,
       originX: 'left',
       originY: 'center'
@@ -67,30 +59,30 @@ function addArrow(obj, x1, y1, x2, y2) {
     selectable: false
   });
 
-  _canvas.add(group);
-  _canvas.remove(obj);
+  canvas.add(group);
+  canvas.remove(obj);
 }
 
-function calcLineOffset(pointer) {
+function calcLineOffset(canvas, pointer) {
   let coefficentx = 0.5;
   let coefficenty = 0.5;
-  if (startPoint.x === pointer.x) {
+  if (canvas.startPoint.x === pointer.x) {
     coefficenty = 0;
   }
-  if (startPoint.y === pointer.y) {
+  if (canvas.startPoint.y === pointer.y) {
     coefficentx = 0;
   }
 
-  tempLine.set({
-    x1: startPoint.x - penBrush.width * coefficentx,
-    y1: startPoint.y - penBrush.width * coefficenty,
-    x2: pointer.x - penBrush.width * coefficentx,
-    y2: pointer.y - penBrush.width * coefficenty
+  canvas.tempLine.set({
+    x1: canvas.startPoint.x - canvas.penBrush.width * coefficentx,
+    y1: canvas.startPoint.y - canvas.penBrush.width * coefficenty,
+    x2: pointer.x - canvas.penBrush.width * coefficentx,
+    y2: pointer.y - canvas.penBrush.width * coefficenty
   });
 }
 
-function arrowPathCreated(ev) {
-  const arr = ev.path.path;
+function arrowPathCreated({ path }) {
+  const arr = path.path;
   let lastP = arr[arr.length - 1];
   let i = arr.length - 2;
   while (calcDistance(arr[i], lastP) < 5) {
@@ -100,67 +92,66 @@ function arrowPathCreated(ev) {
     return;
   }
 
-  addArrow(ev.path, arr[i][1], arr[i][2], lastP[1], lastP[2]);
-  saveHistory(_canvas);
+  addArrow(this, path, arr[i][1], arr[i][2], lastP[1], lastP[2]);
+  saveHistory(this);
 }
 
-function normalPathCreated(o) {
-  saveHistory(_canvas);
+function normalPathCreated() {
+  saveHistory(this);
 }
 
-function handleMouseDown(o) {
-  var pointer = _canvas.getPointer(o.e);
+function handleMouseDown({ e }) {
+  var pointer = this.getPointer(e);
   var points = [pointer.x, pointer.y, pointer.x, pointer.y];
-  startPoint = pointer;
+  this.startPoint = pointer;
 
-  tempLine = new fabric.Line(points, {
-    strokeWidth: penBrush.width,
-    fill: penBrush.color,
-    stroke: penBrush.color,
+  this.tempLine = new fabric.Line(points, {
+    strokeWidth: this.penBrush.width,
+    fill: this.penBrush.color,
+    stroke: this.penBrush.color,
     opacity: 0.4,
     selectable: false
   });
 
-  _canvas.add(tempLine);
+  this.add(this.tempLine);
 }
 
-function handleMouseMove(o) {
-  if (tempLine) {
-    var pointer = _canvas.getPointer(o.e);
-    calcLineOffset(pointer);
-    _canvas.renderAll();
+function handleMouseMove({ e }) {
+  if (this.tempLine) {
+    var pointer = this.getPointer(e);
+    calcLineOffset(this, pointer);
+    this.renderAll();
   }
 }
 
-function handleMouseUp(o) {
-  if (tempLine.x1 === tempLine.x2 && tempLine.y1 === tempLine.y2) {
-    _canvas.remove(tempLine);
+function handleMouseUp({ e }) {
+  if (this.tempLine.x1 === this.tempLine.x2 && this.tempLine.y1 === this.tempLine.y2) {
+    this.remove(this.tempLine);
   } else {
-    var pointer = _canvas.getPointer(o.e);
-    calcLineOffset(pointer);
-    tempLine.set({
+    var pointer = this.getPointer(e);
+    calcLineOffset(this, pointer);
+    this.tempLine.set({
       opacity: 1
     });
-    _canvas.renderAll();
-    console.log('line added');
-    saveHistory(_canvas);
+    this.renderAll();
+    saveHistory(this);
   }
-  tempLine = null;
+  this.tempLine = null;
 }
 
-function handleMouseUpArrow(o) {
-  if (tempLine.x1 === tempLine.x2 && tempLine.y1 === tempLine.y2) {
-    _canvas.remove(tempLine);
+function handleMouseUpArrow({ e }) {
+  if (this.tempLine.x1 === this.tempLine.x2 && this.tempLine.y1 === this.tempLine.y2) {
+    this.remove(this.tempLine);
   } else {
-    var pointer = _canvas.getPointer(o.e);
-    calcLineOffset(pointer);
-    tempLine.set({
+    var pointer = this.getPointer(e);
+    calcLineOffset(this, pointer);
+    this.tempLine.set({
       opacity: 1
     });
-    addArrow(tempLine, startPoint.x, startPoint.y, pointer.x, pointer.y);
-    saveHistory(_canvas);
+    addArrow(this, this.tempLine, this.startPoint.x, this.startPoint.y, pointer.x, pointer.y);
+    saveHistory(this);
   }
-  tempLine = null;
+  this.tempLine = null;
 }
 
 function* selectTool(action) {
@@ -178,25 +169,25 @@ function* selectTool(action) {
 
     switch (action.tool) {
       case 3:
-        instance.freeDrawingBrush = penBrush;
+        instance.freeDrawingBrush = instance.penBrush;
         instance.isDrawingMode = true;
         instance.on('path:created', normalPathCreated);
         break;
       case 4:
-        instance.freeDrawingBrush = penBrush;
+        instance.freeDrawingBrush = instance.penBrush;
         instance.isDrawingMode = true;
         instance.on('path:created', arrowPathCreated);
         break;
       case 5:
         instance.isDrawingMode = false;
-        disableSelection(_canvas);
+        disableSelection(instance);
         instance.on('mouse:down', handleMouseDown);
         instance.on('mouse:move', handleMouseMove);
         instance.on('mouse:up', handleMouseUpArrow);
         break;
       case 6:
         instance.isDrawingMode = false;
-        disableSelection(_canvas);
+        disableSelection(instance);
         instance.on('mouse:down', handleMouseDown);
         instance.on('mouse:move', handleMouseMove);
         instance.on('mouse:up', handleMouseUp);
@@ -208,11 +199,19 @@ function* selectTool(action) {
 }
 
 function* setPenSize({ size }) {
-  penBrush.width = size;
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance.penBrush.width = size;
 }
 
 function* setSelectedColor({ color }) {
-  penBrush.color = color;
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance.penBrush.color = color;
 }
 
 function* initCanvas({ canvas }) {
@@ -220,11 +219,9 @@ function* initCanvas({ canvas }) {
     canvas: { penSize, color }
   } = yield select();
 
-  penBrush = new fabric.PencilBrush(canvas);
-  penBrush.color = color;
-  penBrush.width = penSize;
-
-  _canvas = canvas;
+  canvas.penBrush = new fabric.PencilBrush(canvas);
+  canvas.penBrush.color = color;
+  canvas.penBrush.width = penSize;
 }
 
 export default function* penSagas() {

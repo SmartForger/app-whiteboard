@@ -10,9 +10,6 @@ import {
 import { disableSelection } from './utils';
 import { saveHistory } from './history';
 
-let eraserBrush = null;
-let _canvas = null;
-
 function handlePathCreated({ path }) {
   path.set({
     objType: 'eraser',
@@ -22,15 +19,15 @@ function handlePathCreated({ path }) {
     lockMovementY: true
   });
 
-  _canvas.forEachObject(o => {
+  this.forEachObject(o => {
     o.set({
       erased: true
     });
   });
 
-  _canvas.renderAll();
+  this.renderAll();
 
-  saveHistory(_canvas);
+  saveHistory(this);
 }
 
 function* selectTool(action) {
@@ -43,10 +40,10 @@ function* selectTool(action) {
     instance.discardActiveObject();
 
     if (action.tool === 7) {
-      _canvas.isDrawingMode = true;
-      _canvas.freeDrawingBrush = eraserBrush;
+      instance.isDrawingMode = true;
+      instance.freeDrawingBrush = instance.eraserBrush;
       instance.on('path:created', handlePathCreated);
-      disableSelection(_canvas);
+      disableSelection(instance);
     }
   }
 }
@@ -60,7 +57,7 @@ function* deleteObject() {
     instance.getActiveObjects().forEach(obj => {
       instance.remove(obj);
     });
-    saveHistory(_canvas);
+    saveHistory(instance);
   }
 }
 
@@ -69,16 +66,18 @@ function* initCanvas({ canvas }) {
     canvas: { eraserSize }
   } = yield select();
 
-  eraserBrush = new fabric.PencilBrush(canvas);
-  eraserBrush.color = '#fff';
-  eraserBrush.width = eraserSize;
-  eraserBrush.globalCompositeOperation = 'destination-out';
-
-  _canvas = canvas;
+  canvas.eraserBrush = new fabric.PencilBrush(canvas);
+  canvas.eraserBrush.color = '#fff';
+  canvas.eraserBrush.width = eraserSize;
+  canvas.eraserBrush.globalCompositeOperation = 'destination-out';
 }
 
 function* setEraserSize({ size }) {
-  eraserBrush.width = size;
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance.eraserBrush.width = size;
 }
 
 export default function* rootSaga() {

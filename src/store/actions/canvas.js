@@ -12,6 +12,8 @@ export const SET_TEXT_SIZE = 'SET_TEXT_SIZE';
 export const SET_BACKGROUND = 'SET_BACKGROUND';
 export const SET_COLORS = 'SET_COLORS';
 export const SET_ZOOM = 'SET_ZOOM';
+export const UNDO = 'UNDO';
+export const INSERT_IMAGE = 'INSERT_IMAGE';
 
 /**
  * Action Creators
@@ -69,4 +71,13 @@ export const setColors = colors => ({
 export const setZoom = zoom => ({
   type: SET_ZOOM,
   zoom
+});
+
+export const undo = () => ({
+  type: UNDO
+});
+
+export const insertImage = image => ({
+  type: INSERT_IMAGE,
+  image
 });

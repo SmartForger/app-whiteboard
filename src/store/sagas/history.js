@@ -1,7 +1,11 @@
-import { create, clone } from 'jsondiffpatch';
+import { create } from 'jsondiffpatch';
 import { renderMinimap } from './utils';
 let canvasHistory = [];
-let currentState = {};
+const defaultState = {
+  version: '3.4.0',
+  objects: []
+};
+let currentState = defaultState;
 let diffpatcher = create({});
 
 export const saveHistory = canvas => {
@@ -26,12 +30,12 @@ export const undo = () => {
     console.log('current state => ', currentState);
     console.log('history => ', canvasHistory);
 
-    return clone(currentState);
+    return currentState;
   }
 
-  return {};
+  return defaultState;
 };
 
 export const getCurrentState = () => {
-  return clone(currentState);
+  return currentState;
 };

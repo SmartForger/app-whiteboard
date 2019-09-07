@@ -9,48 +9,47 @@ import {
 import { fabric } from 'fabric';
 import { saveHistory } from './history';
 
-let _canvas = null;
-let inputEl = null;
-let textPoint = null;
-let textSize = 16;
-let textColor = '#000';
-
 function handleMouseUp({ pointer }) {
-  if (!textPoint) {
-    inputEl.className = 'itext';
-    inputEl.style = `left:${pointer.x}px;top:${pointer.y}px;font-size: ${textSize}px;color: ${textColor};`;
-    inputEl.value = '';
-    inputEl.focus();
-    textPoint = pointer;
+  if (!this.textPoint && this.getZoom() === 1) {
+    this.inputEl.className = 'itext';
+    this.inputEl.style = `
+      left:${pointer.x}px;
+      top:${pointer.y}px;
+      font-size: ${this.textSize}px;
+      color: ${this.textColor};
+    `;
+    this.inputEl.value = '';
+    this.inputEl.focus();
+    this.textPoint = pointer;
   }
 }
 
 function handleInputBlur() {
-  if (textPoint && inputEl.value) {
+  if (this.canvas.textPoint && this.value) {
     setTimeout(() => {
-      const text = new fabric.Text(inputEl.value, {
-        left: textPoint.x,
-        top: textPoint.y,
+      const text = new fabric.Text(this.value, {
+        left: this.canvas.textPoint.x,
+        top: this.canvas.textPoint.y,
         fontFamily: 'Roboto, sans-serif',
-        fontSize: textSize,
+        fontSize: this.canvas.textSize,
         fontWeight: 400,
-        fill: textColor,
+        fill: this.canvas.textColor,
         hasControls: false
       });
-      _canvas.add(text);
+      this.canvas.add(text);
 
-      textPoint = null;
-      inputEl.className = 'itext hidden';
-      inputEl.value = '';
+      this.canvas.textPoint = null;
+      this.className = 'itext hidden';
+      this.value = '';
 
-      saveHistory(_canvas);
+      saveHistory(this.canvas);
     }, 200);
   }
 }
 
 function* selectTool(action) {
   const {
-    canvas: { instance }
+    canvas: { instance, textSize, color }
   } = yield select();
 
   if (instance) {
@@ -60,24 +59,37 @@ function* selectTool(action) {
       instance.on('mouse:up', handleMouseUp);
       instance.isDrawingMode = false;
       instance.selection = false;
+      instance.textPoint = null;
+      instance.textSize = textSize;
+      instance.textColor = color;
     }
   }
 }
 
 function* initCanvas({ canvas }) {
-  _canvas = canvas;
-  inputEl = document.createElement('input');
+  const inputEl = document.createElement('input');
   canvas.wrapperEl.append(inputEl);
   inputEl.className = 'itext hidden';
   inputEl.addEventListener('blur', handleInputBlur);
+  inputEl.canvas = canvas;
+
+  canvas.inputEl = inputEl;
 }
 
 function* setSize({ size }) {
-  textSize = size;
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance.textSize = size;
 }
 
 function* setColor({ color }) {
-  textColor = color;
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance.textColor = color;
 }
 
 export default function* textSaga() {

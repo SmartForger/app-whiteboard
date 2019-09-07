@@ -10,65 +10,56 @@ import {
 import { disableSelection } from './utils';
 import { saveHistory } from './history';
 
-let shapeBrush = null;
-let _canvas = null;
-let shapeType = 0;
-let startPoint = {
-  x: 0,
-  y: 0
-};
-let tempShape = null;
+function handleMouseDown({ e }) {
+  var pointer = this.getPointer(e);
+  this.startPoint = pointer;
 
-function handleMouseDown(o) {
-  var pointer = _canvas.getPointer(o.e);
-  startPoint = pointer;
-
-  switch (shapeType) {
+  switch (this.shapeType) {
     case 8:
-      tempShape = new fabric.Rect({
-        left: startPoint.x,
-        top: startPoint.y,
+      this.tempShape = new fabric.Rect({
+        left: this.startPoint.x,
+        top: this.startPoint.y,
         width: 0,
         height: 0,
-        strokeWidth: shapeBrush.width,
-        stroke: shapeBrush.color,
+        strokeWidth: this.shapeBrush.width,
+        stroke: this.shapeBrush.color,
         fill: 'transparent',
         opacity: 0.4,
         strokeLineJoin: 'round'
       });
       break;
     case 9:
-      tempShape = new fabric.Rect({
-        left: startPoint.x,
-        top: startPoint.y,
+      this.tempShape = new fabric.Rect({
+        left: this.startPoint.x,
+        top: this.startPoint.y,
         width: 0,
         height: 0,
         strokeWidth: 0,
-        fill: shapeBrush.color,
+        fill: this.shapeBrush.color,
         opacity: 0.4,
         strokeLineJoin: 'round'
       });
       break;
     case 10:
-      tempShape = new fabric.Ellipse({
-        left: startPoint.x,
-        top: startPoint.y,
+      this.tempShape = new fabric.Ellipse({
+        left: this.startPoint.x,
+        top: this.startPoint.y,
         rx: 0,
         ry: 0,
-        strokeWidth: shapeBrush.width,
-        stroke: shapeBrush.color,
+        strokeWidth: this.shapeBrush.width,
+        stroke: this.shapeBrush.color,
         fill: 'transparent',
         opacity: 0.4
       });
       break;
     case 11:
-      tempShape = new fabric.Ellipse({
-        left: startPoint.x,
-        top: startPoint.y,
+      this.tempShape = new fabric.Ellipse({
+        left: this.startPoint.x,
+        top: this.startPoint.y,
         rx: 0,
         ry: 0,
         strokeWidth: 0,
-        fill: shapeBrush.color,
+        fill: this.shapeBrush.color,
         opacity: 0.4
       });
       break;
@@ -76,33 +67,33 @@ function handleMouseDown(o) {
       break;
   }
 
-  _canvas.add(tempShape);
+  this.add(this.tempShape);
 }
 
-function moveShape(o) {
-  var pointer = _canvas.getPointer(o.e);
+function moveShape(canvas, { e }) {
+  var pointer = canvas.getPointer(e);
 
-  if (tempShape && startPoint.x !== pointer.x && startPoint.y !== pointer.y) {
-    switch (shapeType) {
+  if (canvas.tempShape && canvas.startPoint.x !== pointer.x && canvas.startPoint.y !== pointer.y) {
+    switch (canvas.shapeType) {
       case 8:
       case 9:
-        tempShape.set({
-          left: Math.min(startPoint.x, pointer.x),
-          top: Math.min(startPoint.y, pointer.y),
-          width: Math.abs(startPoint.x - pointer.x),
-          height: Math.abs(startPoint.y - pointer.y)
+        canvas.tempShape.set({
+          left: Math.min(canvas.startPoint.x, pointer.x),
+          top: Math.min(canvas.startPoint.y, pointer.y),
+          width: Math.abs(canvas.startPoint.x - pointer.x),
+          height: Math.abs(canvas.startPoint.y - pointer.y)
         });
-        _canvas.renderAll();
+        canvas.renderAll();
         break;
       case 10:
       case 11:
-        tempShape.set({
-          left: Math.min(startPoint.x, pointer.x),
-          top: Math.min(startPoint.y, pointer.y),
-          rx: Math.abs(startPoint.x - pointer.x) / 2,
-          ry: Math.abs(startPoint.y - pointer.y) / 2
+        canvas.tempShape.set({
+          left: Math.min(canvas.startPoint.x, pointer.x),
+          top: Math.min(canvas.startPoint.y, pointer.y),
+          rx: Math.abs(canvas.startPoint.x - pointer.x) / 2,
+          ry: Math.abs(canvas.startPoint.y - pointer.y) / 2
         });
-        _canvas.renderAll();
+        canvas.renderAll();
         break;
       default:
         break;
@@ -111,42 +102,54 @@ function moveShape(o) {
 }
 
 function handleMouseMove(o) {
-  moveShape(o);
+  moveShape(this, o);
 }
 
 function handleMouseUp(o) {
-  moveShape(o);
-  tempShape.set({
+  moveShape(this, o);
+  this.tempShape.set({
     opacity: 1
   });
-  _canvas.renderAll();
-  tempShape = null;
+  this.renderAll();
+  this.tempShape = null;
 
-  saveHistory(_canvas);
+  saveHistory(this);
 }
 
 function* selectTool(action) {
-  if (_canvas) {
-    _canvas.off('mouse:down', handleMouseDown);
-    _canvas.off('mouse:move', handleMouseMove);
-    _canvas.off('mouse:up', handleMouseUp);
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  if (instance) {
+    instance.off('mouse:down', handleMouseDown);
+    instance.off('mouse:move', handleMouseMove);
+    instance.off('mouse:up', handleMouseUp);
     if (action.tool >= 8 && action.tool <= 11) {
-      shapeType = action.tool;
-      _canvas.isDrawingMode = false;
-      disableSelection(_canvas);
-      _canvas.on('mouse:down', handleMouseDown);
-      _canvas.on('mouse:move', handleMouseMove);
-      _canvas.on('mouse:up', handleMouseUp);
+      instance.shapeType = action.tool;
+      instance.isDrawingMode = false;
+      disableSelection(instance);
+      instance.on('mouse:down', handleMouseDown);
+      instance.on('mouse:move', handleMouseMove);
+      instance.on('mouse:up', handleMouseUp);
     }
   }
 }
 
 function* setShapeStrokeSize({ size }) {
-  shapeBrush.width = size;
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance.shapeBrush.width = size;
 }
 
 function* setSelectedColor({ color }) {
-  shapeBrush.color = color;
+  const {
+    canvas: { instance }
+  } = yield select();
+
+  instance.shapeBrush.color = color;
 }
 
 function* initCanvas({ canvas }) {
@@ -154,11 +157,9 @@ function* initCanvas({ canvas }) {
     canvas: { penSize, color }
   } = yield select();
 
-  shapeBrush = new fabric.PencilBrush(canvas);
-  shapeBrush.color = color;
-  shapeBrush.width = penSize;
-
-  _canvas = canvas;
+  canvas.shapeBrush = new fabric.PencilBrush(canvas);
+  canvas.shapeBrush.color = color;
+  canvas.shapeBrush.width = penSize;
 }
 
 export default function* shapeSagas() {
