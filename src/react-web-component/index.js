@@ -1,19 +1,13 @@
-const React = require('react');
-const ReactDOM = require('react-dom');
-const retargetEvents = require('react-shadow-dom-retarget-events');
-const getStyleElementsFromReactWebComponentStyleLoader = require('./getStyleElementsFromReactWebComponentStyleLoader');
-const extractAttributes = require('./extractAttributes');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import retargetEvents from 'react-shadow-dom-retarget-events';
+import getStyleElementsFromReactWebComponentStyleLoader from './getStyleElementsFromReactWebComponentStyleLoader';
+import extractAttributes from './extractAttributes';
 
-require('@webcomponents/shadydom');
-require('@webcomponents/custom-elements');
+import '@webcomponents/shadydom';
+import '@webcomponents/custom-elements';
 
-module.exports = {
-  /**
-   * @param {JSX.Element} app
-   * @param {string} tagName - The name of the web component. Has to be minus "-" delimited.
-   * @param {boolean} useShadowDom - If the value is set to "true" the web component will use the `shadowDom`. The default value is true.
-   */
-  create: (app, tagName, useShadowDom = true) => {
+export default function create(app, tagName, useShadowDom = true) {
     let appInstance;
 
     const lifeCycleHooks = {
@@ -85,5 +79,4 @@ module.exports = {
     }
 
     customElements.define(tagName, proto);
-  },
 };

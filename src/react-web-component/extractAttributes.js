@@ -3,7 +3,7 @@
  * @param nodeMap
  * @returns {{}}
  */
-module.exports = function extractAttributes(nodeMap) {
+export default function extractAttributes(nodeMap) {
   if (!nodeMap.attributes) {
     return {};
   }
