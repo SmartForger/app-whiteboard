@@ -1,7 +1,7 @@
 /* eslint-disable require-yield */
 import { takeEvery, select } from 'redux-saga/effects';
-import { SET_ZOOM, SET_SELECTED_TOOL, SET_CANVAS } from '../actions';
-import { disableSelection, updateMinimapRect, renderMinimap } from './utils';
+import { SET_ZOOM, SET_SELECTED_TOOL } from '../actions';
+import { disableSelection, updateMinimapRect } from './utils';
 
 function* setZoom({ zoom }) {
   const {
@@ -87,14 +87,7 @@ function* selectTool(action) {
     }
   }
 }
-
-function* initCanvas({ canvas }) {
-  renderMinimap(canvas);
-  updateMinimapRect(canvas);
-}
-
 export default function* zoomSaga() {
   yield takeEvery(SET_ZOOM, setZoom);
   yield takeEvery(SET_SELECTED_TOOL, selectTool);
-  yield takeEvery(SET_CANVAS, initCanvas);
 }

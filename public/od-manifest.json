@@ -1,12 +1,12 @@
 {
   "title": "White Board Widget",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "iconImage": "widget-ico.png",
   "permissions": [],
   "app": null,
   "widgets": [
     {
-      "tag": "white-board-widget1",
+      "tag": "white-board-widget3",
       "title": "White Board Widget",
       "bootstrapModule": "white-board-widget.js",
       "iconImage": "widget-ico.png",
