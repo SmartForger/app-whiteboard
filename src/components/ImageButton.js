@@ -18,6 +18,7 @@ const ImageButton = ({ onSelectFile }) => {
     if (file) {
       const reader = new FileReader();
       reader.onload = function() {
+        console.log(reader.result);
         onSelectFile(reader.result);
       };
       reader.readAsDataURL(file);

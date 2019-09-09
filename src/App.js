@@ -6,7 +6,7 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import customTheme from './theme';
 import MainView from './views/Main';
 import initStore from './store/config';
-import { setComponent } from './store/actions';
+import { setComponent, setEraserBackground } from './store/actions';
 
 class App extends Component {
   constructor(props) {
@@ -38,12 +38,14 @@ class App extends Component {
   }
 
   webComponentConstructed(component) {
-    console.log(component.getAttribute('background'));
     const root = component.shadowRoot.querySelector('div');
     root.style = 'height: 100%; position: relative;';
 
     this.webComponent = component.shadowRoot;
     this.store.dispatch(setComponent(component));
+    this.store.dispatch(
+      setEraserBackground(this.getBgObj(component.getAttribute('background')))
+    );
 
     this.setState({
       jss: create({
@@ -70,8 +72,24 @@ class App extends Component {
     });
   }
 
-  webComponentAttributeChanged(...params) {
-    console.log(params);
+  webComponentAttributeChanged(attributeName, oldValue, newValue) {
+    if (attributeName === 'background') {
+      this.store.dispatch(setEraserBackground(this.getBgObj(newValue)));
+    }
+  }
+
+  getBgObj(v) {
+    if (v.match(/^#\w{3,8}$/)) {
+      return {
+        type: 'color',
+        value: v
+      };
+    }
+
+    return {
+      type: 'base64',
+      value: v
+    };
   }
 }
 

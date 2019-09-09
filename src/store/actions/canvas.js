@@ -14,6 +14,7 @@ export const SET_COLORS = 'SET_COLORS';
 export const SET_ZOOM = 'SET_ZOOM';
 export const UNDO = 'UNDO';
 export const INSERT_IMAGE = 'INSERT_IMAGE';
+export const SET_ERASER_BACKGROUND = 'SET_ERASER_BACKGROUND';
 
 /**
  * Action Creators
@@ -80,4 +81,9 @@ export const undo = () => ({
 export const insertImage = image => ({
   type: INSERT_IMAGE,
   image
+});
+
+export const setEraserBackground = data => ({
+  type: SET_ERASER_BACKGROUND,
+  data
 });

@@ -8,7 +8,8 @@ import {
   SET_TEXT_SIZE,
   SET_BACKGROUND,
   SET_COLORS,
-  SET_ZOOM
+  SET_ZOOM,
+  SET_ERASER_BACKGROUND
 } from '../actions';
 import { PREDEFINED_COLOR_LIST } from '../../constants';
 
@@ -22,7 +23,11 @@ const initialState = {
   textSize: 16,
   background: '#fff',
   colors: PREDEFINED_COLOR_LIST,
-  zoom: 1
+  zoom: 1,
+  eraserBg: {
+    type: 'color', // color, base64,
+    value: '#fff' // hex color or base64 string of image
+  }
 };
 
 export default (state = initialState, action) => {
@@ -85,6 +90,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         zoom: action.zoom
+      };
+
+    case SET_ERASER_BACKGROUND:
+      return {
+        ...state,
+        eraserBg: action.data
       };
 
     default:

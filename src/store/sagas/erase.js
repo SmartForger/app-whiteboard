@@ -5,7 +5,8 @@ import {
   SET_SELECTED_TOOL,
   DELETE_OBJECT,
   SET_CANVAS,
-  SET_ERASER_SIZE
+  SET_ERASER_SIZE,
+  SET_ERASER_BACKGROUND
 } from '../actions';
 import { disableSelection } from './utils';
 import { saveHistory } from './history';
@@ -28,6 +29,20 @@ function handlePathCreated({ path }) {
   this.renderAll();
 
   saveHistory(this);
+}
+
+function createEraserBrush(canvas, background, eraserSize) {
+  if (background.type === 'color') {
+    canvas.eraserBrush = new fabric.PencilBrush(canvas);
+    canvas.eraserBrush.color = background.value;
+  } else {
+    const img = new Image();
+    img.src = background.value;
+    const texturePatternBrush = new fabric.PatternBrush(canvas);
+    texturePatternBrush.source = img;
+    canvas.eraserBrush = texturePatternBrush;
+  }
+  canvas.eraserBrush.width = eraserSize;
 }
 
 function* selectTool(action) {
@@ -63,13 +78,10 @@ function* deleteObject() {
 
 function* initCanvas({ canvas }) {
   const {
-    canvas: { eraserSize }
+    canvas: { eraserSize, eraserBg }
   } = yield select();
 
-  canvas.eraserBrush = new fabric.PencilBrush(canvas);
-  canvas.eraserBrush.color = '#fff';
-  canvas.eraserBrush.width = eraserSize;
-  canvas.eraserBrush.globalCompositeOperation = 'destination-out';
+  createEraserBrush(canvas, eraserBg, eraserSize);
 }
 
 function* setEraserSize({ size }) {
@@ -80,9 +92,20 @@ function* setEraserSize({ size }) {
   instance.eraserBrush.width = size;
 }
 
+function* setEraserBackground({ data }) {
+  const {
+    canvas: { instance, eraserSize }
+  } = yield select();
+
+  if (instance) {
+    createEraserBrush(instance, data, eraserSize);
+  }
+}
+
 export default function* rootSaga() {
   yield takeEvery(SET_SELECTED_TOOL, selectTool);
   yield takeEvery(DELETE_OBJECT, deleteObject);
   yield takeEvery(SET_CANVAS, initCanvas);
   yield takeEvery(SET_ERASER_SIZE, setEraserSize);
+  yield takeEvery(SET_ERASER_BACKGROUND, setEraserBackground);
 }
