@@ -38,11 +38,12 @@ class App extends Component {
   }
 
   webComponentConstructed(component) {
-    const root = component.querySelector('div');
+    console.log(component.getAttribute('background'));
+    const root = component.shadowRoot.querySelector('div');
     root.style = 'height: 100%; position: relative;';
 
-    this.webComponent = component;
-    this.store.dispatch(setComponent(component.host));
+    this.webComponent = component.shadowRoot;
+    this.store.dispatch(setComponent(component));
 
     this.setState({
       jss: create({
@@ -67,6 +68,10 @@ class App extends Component {
         }
       })
     });
+  }
+
+  webComponentAttributeChanged(...params) {
+    console.log(params);
   }
 }
 
