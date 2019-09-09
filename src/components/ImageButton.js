@@ -1,6 +1,6 @@
 import React from 'react';
 import { IconButton } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 
 const ImageButton = ({ onSelectFile }) => {
   const inputRef = React.useRef();
@@ -18,7 +18,6 @@ const ImageButton = ({ onSelectFile }) => {
     if (file) {
       const reader = new FileReader();
       reader.onload = function() {
-        console.log(reader.result);
         onSelectFile(reader.result);
       };
       reader.readAsDataURL(file);
@@ -29,7 +28,7 @@ const ImageButton = ({ onSelectFile }) => {
   return (
     <>
       <IconButton size="small" onClick={handleOpen}>
-        <AddIcon />
+        <AddPhotoAlternateIcon />
       </IconButton>
       <input
         className="hidden"
