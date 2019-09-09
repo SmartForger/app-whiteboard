@@ -8,6 +8,7 @@ class Canvas extends Component {
     super(props);
 
     this.canvasRef = React.createRef();
+    this.containerRef = React.createRef();
   }
 
   componentDidMount() {
@@ -26,9 +27,9 @@ class Canvas extends Component {
           new CustomEvent('onResizeCallback', {
             detail: {
               callback: () => {
-                const canvasEl = this.canvasRef.current;
-                this.canvas.setWidth(canvasEl.clientWidth);
-                this.canvas.setHeight(canvasEl.clientHeight);
+                const containerEl = this.containerRef.current;
+                this.canvas.setWidth(containerEl.clientWidth);
+                this.canvas.setHeight(containerEl.clientHeight);
                 this.canvas.renderAll();
               }
             }
@@ -53,7 +54,12 @@ class Canvas extends Component {
 
   render() {
     return (
-      <div tabIndex={1} style={{ height: '100%' }} onKeyUp={this.handleKeyUp}>
+      <div
+        tabIndex={1}
+        style={{ height: '100%' }}
+        ref={this.containerRef}
+        onKeyUp={this.handleKeyUp}
+      >
         <canvas ref={this.canvasRef} />
       </div>
     );
