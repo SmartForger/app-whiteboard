@@ -79,6 +79,13 @@ class App extends Component {
   }
 
   getBgObj(v) {
+    if (!v) {
+      return {
+        type: 'color',
+        value: '#fff'
+      };
+    }
+
     if (v.match(/^#\w{3,8}$/)) {
       return {
         type: 'color',
