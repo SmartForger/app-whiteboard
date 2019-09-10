@@ -15,6 +15,7 @@ export const SET_ZOOM = 'SET_ZOOM';
 export const UNDO = 'UNDO';
 export const INSERT_IMAGE = 'INSERT_IMAGE';
 export const SET_ERASER_BACKGROUND = 'SET_ERASER_BACKGROUND';
+export const REFRESH_BOARD = 'REFRESH_BOARD';
 
 /**
  * Action Creators
@@ -86,4 +87,8 @@ export const insertImage = image => ({
 export const setEraserBackground = data => ({
   type: SET_ERASER_BACKGROUND,
   data
+});
+
+export const refreshBoard = () => ({
+  type: REFRESH_BOARD
 });

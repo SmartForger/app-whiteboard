@@ -27,9 +27,9 @@ export const renderMinimap = canvas => {
   const minimapEl = canvas.wrapperEl.parentElement.parentElement.querySelector(
     '.minimap'
   );
-  minimapEl.style= `width: ${w + 2}px;`;
-  const bgEl = minimapEl.querySelector('.minimapBg')
-  
+  minimapEl.style = `width: ${w + 2}px;`;
+  const bgEl = minimapEl.querySelector('.minimapBg');
+
   const transform = canvas.viewportTransform;
   canvas.setZoom(1);
   canvas.viewportTransform[4] = 0;
@@ -50,10 +50,10 @@ export const updateMinimapRect = canvas => {
   const rectEl = minimapEl.querySelector('.minimapRect');
   const ratio = 96 / canvas.height;
 
-  const w = canvas.width * ratio / zoom;
-  const h = canvas.height * ratio / zoom;
-  const left = canvas.viewportTransform[4] * ratio / zoom;
-  const top = canvas.viewportTransform[5] * ratio / zoom;
+  const w = (canvas.width * ratio) / zoom;
+  const h = (canvas.height * ratio) / zoom;
+  const left = (canvas.viewportTransform[4] * ratio) / zoom;
+  const top = (canvas.viewportTransform[5] * ratio) / zoom;
 
   rectEl.style = `
     width: ${w}px;
@@ -61,4 +61,35 @@ export const updateMinimapRect = canvas => {
     left: ${-left}px;
     top: ${-top}px;
   `;
-}
+};
+
+export const loadStateToCanvas = (canvas, state) => {
+  canvas.loadFromJSON(state, function() {
+    let objects = canvas.getObjects();
+    let erased = false;
+    for (let i = objects.length; i > 0; i--) {
+      let obj = objects[i - 1];
+      if (obj.erased) {
+        if (erased) {
+          obj.set({
+            selectable: false
+          });
+        } else {
+          obj.set({
+            erased: false
+          });
+        }
+      }
+      if (obj.objType === 'eraser') {
+        erased = true;
+        obj.set({
+          selectable: false,
+          hasControls: false,
+          lockMovementX: true,
+          lockMovementY: true
+        });
+      }
+    }
+    // renderMinimap(canvas);
+  });
+};

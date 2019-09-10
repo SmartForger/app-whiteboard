@@ -1,5 +1,5 @@
 import { create, clone } from 'jsondiffpatch';
-import { renderMinimap } from './utils';
+// import { renderMinimap } from './utils';
 let canvasHistory = [];
 const defaultState = {
   version: '3.4.0',
@@ -20,7 +20,7 @@ export const restoreStateFromHistory = () => {
 
   currentState = state;
   return true;
-}
+};
 
 export const saveHistory = canvas => {
   const newState = canvas.toObject(['objType', 'erased']);
@@ -31,7 +31,7 @@ export const saveHistory = canvas => {
     console.log('differences => ', differences);
     console.log('current state => ', currentState);
     console.log('history => ', canvasHistory);
-    renderMinimap(canvas);
+    // renderMinimap(canvas);
   }
 };
 
@@ -52,4 +52,8 @@ export const undo = () => {
 
 export const getCurrentState = () => {
   return currentState;
+};
+
+export const getDefaultState = () => {
+  return clone(defaultState);
 };

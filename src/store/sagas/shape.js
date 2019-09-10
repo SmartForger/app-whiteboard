@@ -83,7 +83,6 @@ function moveShape(canvas, { e }) {
           width: Math.abs(canvas.startPoint.x - pointer.x),
           height: Math.abs(canvas.startPoint.y - pointer.y)
         });
-        canvas.renderAll();
         break;
       case 10:
       case 11:
@@ -93,7 +92,6 @@ function moveShape(canvas, { e }) {
           rx: Math.abs(canvas.startPoint.x - pointer.x) / 2,
           ry: Math.abs(canvas.startPoint.y - pointer.y) / 2
         });
-        canvas.renderAll();
         break;
       default:
         break;
@@ -103,6 +101,7 @@ function moveShape(canvas, { e }) {
 
 function handleMouseMove(o) {
   moveShape(this, o);
+  this.renderAll();
 }
 
 function handleMouseUp(o) {
@@ -110,8 +109,8 @@ function handleMouseUp(o) {
   this.tempShape.set({
     opacity: 1
   });
-  this.renderAll();
   this.tempShape = null;
+  this.renderAll();
 
   saveHistory(this);
 }
@@ -125,6 +124,7 @@ function* selectTool(action) {
     instance.off('mouse:down', handleMouseDown);
     instance.off('mouse:move', handleMouseMove);
     instance.off('mouse:up', handleMouseUp);
+
     if (action.tool >= 8 && action.tool <= 11) {
       instance.shapeType = action.tool;
       instance.isDrawingMode = false;

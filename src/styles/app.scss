@@ -227,3 +227,16 @@ canvas, .canvas-container {
   position: absolute;
   border: 1px solid rgba(0, 0, 0, 0.87);
 }
+
+.refresh-button {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 1;
+  border-radius: 50% !important;
+  background: #f2f2f2 !important;
+
+  .MuiIconButton-root {
+    border-radius: 50% !important;
+  }
+}
