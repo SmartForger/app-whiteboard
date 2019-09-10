@@ -56,7 +56,7 @@ class Canvas extends Component {
     return (
       <div
         tabIndex={1}
-        style={{ height: '100%' }}
+        className="canvas-wrapper"
         ref={this.containerRef}
         onKeyUp={this.handleKeyUp}
       >
