@@ -1,16 +1,16 @@
-import { SET_COMPONENT } from '../actions';
+import { SET_USER } from '../actions';
 
 const initialState = {
-  component: null,
-  canvas: null
+  userId: '',
+  userName: ''
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case SET_COMPONENT:
+    case SET_USER:
       return {
         ...state,
-        component: action.component
+        ...action.user
       };
 
     default:

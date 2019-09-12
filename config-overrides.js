@@ -3,8 +3,8 @@ module.exports = function override(config, env) {
     path: config.output.path,
     filename: process.env.APPNAME ? `${process.env.APPNAME}.js` : "white-board-widget.js",
     publicPath: "",
-    jsonpFunction: 'webpackJsonpReactWidgetBoilerplate',
-    library: 'reactWidgetBoilerplate'  
+    jsonpFunction: 'webpackJsonpWhiteBoardWidget',
+    library: 'whiteBoardWidget'  
   };
   delete config.optimization.splitChunks;
   delete config.optimization.runtimeChunk;

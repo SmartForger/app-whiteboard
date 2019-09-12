@@ -1,23 +1,20 @@
 {
-  "title": "White Board Widget",
-  "version": "1.0.0",
+  "title": "Team White Board",
+  "version": "1.0.13",
   "iconImage": "widget-ico.png",
   "permissions": [],
-  "app": {
-    "tag": null,
-    "bootstrapModule": null
-  },
+  "app": null,
   "widgets": [
     {
-      "tag": "white-board-widget",
-      "title": "White Board Widget",
+      "tag": "white-board-widget6",
+      "title": "Team White Board",
       "bootstrapModule": "white-board-widget.js",
       "iconImage": "widget-ico.png",
-      "descriptionFull": "White Board Widget",
-      "descriptionShort": "White Board Widget",
+      "descriptionFull": "Shared canvas for multiple users to observe and contribute to a white board drawing. May be overlaid on live network diagram or image assets.",
+      "descriptionShort": "Shared canvas for multiple users to observe and contribute to a white board drawing. May be overlaid on live network diagram or image assets.",
       "customId": "1"
     }
   ],
   "apiCalls": [],
-  "description": "White Board Widget"
+  "description": "Shared canvas for multiple users to observe and contribute to a white board drawing. May be overlaid on live network diagram or image assets."
 }

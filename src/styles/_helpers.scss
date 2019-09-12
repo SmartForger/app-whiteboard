@@ -4,3 +4,7 @@
 @include padding-helper(8);
 @include padding-helper(16);
 @include padding-helper(24);
+
+.hidden {
+  display: none;
+}

@@ -6,7 +6,15 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import customTheme from './theme';
 import MainView from './views/Main';
 import initStore from './store/config';
-import { setComponent } from './store/actions';
+import {
+  setComponent,
+  setEraserBackground,
+  setUser,
+  setSessionController,
+  setCanvasHistory
+} from './store/actions';
+import SessionController from './session-controller';
+import CanvasHistory from './canvas-history';
 
 class App extends Component {
   constructor(props) {
@@ -38,11 +46,34 @@ class App extends Component {
   }
 
   webComponentConstructed(component) {
-    const root = component.querySelector('div');
+    const root = component.shadowRoot.querySelector('div');
     root.style = 'height: 100%; position: relative;';
 
-    this.webComponent = component;
-    this.store.dispatch(setComponent(component.host));
+    this.webComponent = component.shadowRoot;
+    this.store.dispatch(setComponent(component));
+    this.store.dispatch(
+      setEraserBackground(this.getBgObj(component.getAttribute('background')))
+    );
+    component.dispatchEvent(
+      new CustomEvent('onInitCallback', {
+        detail: {
+          callback: ({ userState }) => {
+            this.store.dispatch(
+              setUser({
+                userId: userState.userId,
+                userName: userState.userProfile.firstName + ' ' + userState.userProfile.lastName
+              })
+            );
+            this.store.dispatch(
+              setCanvasHistory(new CanvasHistory([]))
+            );
+            this.store.dispatch(
+              setSessionController(new SessionController(this.store))
+            );
+          }
+        }
+      })
+    );
 
     this.setState({
       jss: create({
@@ -67,6 +98,33 @@ class App extends Component {
         }
       })
     });
+  }
+
+  webComponentAttributeChanged(attributeName, oldValue, newValue) {
+    if (attributeName === 'background') {
+      this.store.dispatch(setEraserBackground(this.getBgObj(newValue)));
+    }
+  }
+
+  getBgObj(v) {
+    if (!v) {
+      return {
+        type: 'color',
+        value: '#fff'
+      };
+    }
+
+    if (v.match(/^#\w{3,8}$/)) {
+      return {
+        type: 'color',
+        value: v
+      };
+    }
+
+    return {
+      type: 'base64',
+      value: v
+    };
   }
 }
 
