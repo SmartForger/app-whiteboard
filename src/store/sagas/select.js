@@ -1,8 +1,7 @@
 /* eslint-disable require-yield */
 import { takeEvery, select } from 'redux-saga/effects';
 import { SET_SELECTED_TOOL, SET_CANVAS } from '../actions';
-import { enableSelection } from './utils';
-import { saveHistory } from './history';
+import { enableSelection, saveHistory, disableControl } from './utils';
 
 function handleObjectModified() {
   saveHistory(this);
@@ -10,8 +9,15 @@ function handleObjectModified() {
 
 function* selectTool(action) {
   const {
-    canvas: { instance }
+    canvas: { instance },
+    session: { active },
+    user: { userId }
   } = yield select();
+
+  if (userId !== active) {
+    disableControl(instance);
+    return;
+  }
 
   if (instance) {
     instance.off('mouse:up', handleObjectModified);

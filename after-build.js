@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const whitelist = [
-  /white-board-widget\.js$/,
+  /white-board-widget\.js/,
   /widget-ico\.png/,
   /od-manifest\.json/,
   /static\/media\/(.+)\.png$/

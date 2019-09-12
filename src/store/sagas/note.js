@@ -8,9 +8,8 @@ import {
   SET_SELECTED_COLOR
 } from '../actions';
 import { fabric } from 'fabric';
-import { disableSelection } from './utils';
+import { disableSelection, saveHistory, disableControl } from './utils';
 import { splitAndMeasureBy } from '../../utils';
-import { saveHistory } from './history';
 
 function handleMouseDown({ pointer }) {
   if (!this.note && this.getZoom() === 1) {
@@ -148,8 +147,15 @@ function handleDbClick({ target }) {
 
 function* selectTool(action) {
   const {
-    canvas: { instance, background, color, textSize }
+    canvas: { instance, background, color, textSize },
+    session: { active },
+    user: { userId }
   } = yield select();
+
+  if (userId !== active) {
+    disableControl(instance);
+    return;
+  }
 
   if (instance) {
     instance.off('mouse:down', handleMouseDown);

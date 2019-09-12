@@ -8,8 +8,7 @@ import {
   SET_ERASER_SIZE,
   SET_ERASER_BACKGROUND
 } from '../actions';
-import { disableSelection } from './utils';
-import { saveHistory } from './history';
+import { disableSelection, saveHistory, disableControl } from './utils';
 
 function handlePathCreated({ path }) {
   path.set({
@@ -47,8 +46,15 @@ function createEraserBrush(canvas, background, eraserSize) {
 
 function* selectTool(action) {
   const {
-    canvas: { instance }
+    canvas: { instance },
+    session: { active },
+    user: { userId }
   } = yield select();
+
+  if (userId !== active) {
+    disableControl(instance);
+    return;
+  }
 
   if (instance) {
     instance.off('path:created', handlePathCreated);

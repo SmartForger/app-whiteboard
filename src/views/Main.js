@@ -1,18 +1,16 @@
 import React from 'react';
 import Toolbar from '../components/Toolbar';
-import Zoom from '../components/Zoom';
 import RefreshButton from '../components/RefreshButton';
 import ParticipantsPanel from '../components/ParticipantsPanel';
 import Canvas from './Canvas';
-import Minimap from './Minimap';
+import ViewBar from '../components/ViewBar';
 
 const Main = () => (
-  <div className="main">
+  <div className="app-main">
     <div className="drawing-board">
       <Toolbar />
-      <Zoom />
       <Canvas />
-      <Minimap />
+      <ViewBar />
       <RefreshButton />
     </div>
     <ParticipantsPanel

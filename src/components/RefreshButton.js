@@ -6,7 +6,7 @@ import { refreshBoard } from '../store/actions';
 
 const RefreshButton = ({ refresh }) => (
   <Paper className="refresh-button">
-    <IconButton size="small" onClick={() => refresh()}>
+    <IconButton size="small" onClick={refresh}>
       <RefreshIcon />
     </IconButton>
   </Paper>

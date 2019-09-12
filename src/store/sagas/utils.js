@@ -8,6 +8,11 @@ export const disableSelection = canvas => {
   canvas.renderAll();
 };
 
+export const disableControl = canvas => {
+  disableSelection(canvas);
+  canvas.isDrawingMode = false;
+}
+
 export const enableSelection = canvas => {
   canvas.selection = true;
   canvas.forEachObject(function(o) {
@@ -92,4 +97,15 @@ export const loadStateToCanvas = (canvas, state) => {
     }
     // renderMinimap(canvas);
   });
+};
+
+export const saveHistory = canvas => {
+  if (canvas.historyObj) {
+    const newState = canvas.toObject(['objType', 'erased']);
+    const differences = canvas.historyObj.getDifference(newState);
+    canvas.historyObj.addToHistory(differences);
+    if (differences) {
+      canvas._sc.sendData(differences);
+    }
+  }
 };

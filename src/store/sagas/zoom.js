@@ -1,7 +1,7 @@
 /* eslint-disable require-yield */
 import { takeEvery, select } from 'redux-saga/effects';
 import { SET_ZOOM, SET_SELECTED_TOOL } from '../actions';
-import { disableSelection, updateMinimapRect } from './utils';
+import { disableSelection } from './utils';
 
 function* setZoom({ zoom }) {
   const {
@@ -26,7 +26,7 @@ function* setZoom({ zoom }) {
   instance.viewportTransform[4] = tx;
   instance.viewportTransform[5] = ty;
   instance.setZoom(zoom);
-  updateMinimapRect(instance);
+  // updateMinimapRect(instance);
 }
 
 function handleMouseDown(opt) {
@@ -65,7 +65,7 @@ function handleMouseMove({ e }) {
 
 function handleMouseUp() {
   this.isDragging = false;
-  updateMinimapRect(this);
+  // updateMinimapRect(this);
 }
 
 function* selectTool(action) {

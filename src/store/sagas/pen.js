@@ -7,8 +7,7 @@ import {
   SET_PEN_SIZE,
   SET_SELECTED_COLOR
 } from '../actions';
-import { disableSelection } from './utils';
-import { saveHistory } from './history';
+import { disableSelection, saveHistory, disableControl } from './utils';
 
 function calcDistance(p0, p1) {
   return Math.sqrt(Math.pow(p0[1] - p1[1], 2) + Math.pow(p0[2] - p1[2], 2));
@@ -125,7 +124,10 @@ function handleMouseMove({ e }) {
 }
 
 function handleMouseUp({ e }) {
-  if (this.tempLine.x1 === this.tempLine.x2 && this.tempLine.y1 === this.tempLine.y2) {
+  if (
+    this.tempLine.x1 === this.tempLine.x2 &&
+    this.tempLine.y1 === this.tempLine.y2
+  ) {
     this.remove(this.tempLine);
   } else {
     var pointer = this.getPointer(e);
@@ -140,7 +142,10 @@ function handleMouseUp({ e }) {
 }
 
 function handleMouseUpArrow({ e }) {
-  if (this.tempLine.x1 === this.tempLine.x2 && this.tempLine.y1 === this.tempLine.y2) {
+  if (
+    this.tempLine.x1 === this.tempLine.x2 &&
+    this.tempLine.y1 === this.tempLine.y2
+  ) {
     this.remove(this.tempLine);
   } else {
     var pointer = this.getPointer(e);
@@ -148,7 +153,14 @@ function handleMouseUpArrow({ e }) {
     this.tempLine.set({
       opacity: 1
     });
-    addArrow(this, this.tempLine, this.startPoint.x, this.startPoint.y, pointer.x, pointer.y);
+    addArrow(
+      this,
+      this.tempLine,
+      this.startPoint.x,
+      this.startPoint.y,
+      pointer.x,
+      pointer.y
+    );
     saveHistory(this);
   }
   this.tempLine = null;
@@ -156,8 +168,15 @@ function handleMouseUpArrow({ e }) {
 
 function* selectTool(action) {
   const {
-    canvas: { instance }
+    canvas: { instance },
+    session: { active },
+    user: { userId }
   } = yield select();
+
+  if (userId !== active) {
+    disableControl(instance);
+    return;
+  }
 
   if (instance) {
     instance.off('path:created', arrowPathCreated);

@@ -1,13 +1,15 @@
 import {
   SET_VIEW,
   SET_CREATE_DIALOG,
-  SET_MINIMAP_VISIBLE
+  SET_MINIMAP_VISIBLE,
+  TOGGLE_RIGHT_PANE
 } from '../actions/ui';
 
 const initialState = {
   view: 0,
   createDialogOpen: false,
-  minimap: false
+  minimap: false,
+  rightPanel: true
 };
 
 export default (state = initialState, action) => {
@@ -28,6 +30,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         minimap: action.visible
+      };
+
+    case TOGGLE_RIGHT_PANE:
+      return {
+        ...state,
+        rightPanel: !state.rightPanel
       };
 
     default:

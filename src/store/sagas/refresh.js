@@ -1,14 +1,21 @@
 import { takeEvery, select, put } from 'redux-saga/effects';
 import { REFRESH_BOARD, setSelectedTool } from '../actions';
-import { saveHistory, getDefaultState } from './history';
-import { loadStateToCanvas } from './utils';
+import CanvasHistory from '../../canvas-history';
+import { loadStateToCanvas, saveHistory, disableControl } from './utils';
 
 function* handleRefresh() {
   const {
-    canvas: { instance, tool }
+    canvas: { instance, tool },
+    session: { active },
+    user: { userId }
   } = yield select();
 
-  loadStateToCanvas(instance, getDefaultState());
+  if (userId !== active) {
+    disableControl(instance);
+    return;
+  }
+
+  loadStateToCanvas(instance, CanvasHistory.getDefaultState());
   yield put(setSelectedTool(tool));
   saveHistory(instance);
 }

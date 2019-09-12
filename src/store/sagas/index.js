@@ -10,6 +10,7 @@ import noteSaga from './note';
 import undoSaga from './undo';
 import zoomSaga from './zoom';
 import refreshSaga from './refresh';
+import sessionSaga from './session';
 
 export default function* rootSaga() {
   yield fork(eraseSaga);
@@ -22,4 +23,5 @@ export default function* rootSaga() {
   yield fork(undoSaga);
   yield fork(zoomSaga);
   yield fork(refreshSaga);
+  yield fork(sessionSaga);
 }

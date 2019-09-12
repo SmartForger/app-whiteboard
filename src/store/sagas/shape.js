@@ -7,8 +7,7 @@ import {
   SET_SELECTED_COLOR,
   SET_SHAPE_STROKE_SIZE
 } from '../actions';
-import { disableSelection } from './utils';
-import { saveHistory } from './history';
+import { disableSelection, saveHistory, disableControl } from './utils';
 
 function handleMouseDown({ e }) {
   var pointer = this.getPointer(e);
@@ -117,8 +116,15 @@ function handleMouseUp(o) {
 
 function* selectTool(action) {
   const {
-    canvas: { instance }
+    canvas: { instance },
+    session: { active },
+    user: { userId }
   } = yield select();
+
+  if (userId !== active) {
+    disableControl(instance);
+    return;
+  }
 
   if (instance) {
     instance.off('mouse:down', handleMouseDown);

@@ -6,7 +6,15 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import customTheme from './theme';
 import MainView from './views/Main';
 import initStore from './store/config';
-import { setComponent, setEraserBackground } from './store/actions';
+import {
+  setComponent,
+  setEraserBackground,
+  setUser,
+  setSessionController,
+  setCanvasHistory
+} from './store/actions';
+import SessionController from './session-controller';
+import CanvasHistory from './canvas-history';
 
 class App extends Component {
   constructor(props) {
@@ -45,6 +53,26 @@ class App extends Component {
     this.store.dispatch(setComponent(component));
     this.store.dispatch(
       setEraserBackground(this.getBgObj(component.getAttribute('background')))
+    );
+    component.dispatchEvent(
+      new CustomEvent('onInitCallback', {
+        detail: {
+          callback: ({ userState }) => {
+            this.store.dispatch(
+              setUser({
+                userId: userState.userId,
+                userName: userState.userProfile.firstName + ' ' + userState.userProfile.lastName
+              })
+            );
+            this.store.dispatch(
+              setCanvasHistory(new CanvasHistory([]))
+            );
+            this.store.dispatch(
+              setSessionController(new SessionController(this.store))
+            );
+          }
+        }
+      })
     );
 
     this.setState({
