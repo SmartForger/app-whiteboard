@@ -9,6 +9,7 @@ export const SET_CANVAS_HISTORY = 'SET_CANVAS_HISTORY';
 export const UPDATE_CANVAS_HISTORY = 'UPDATE_CANVAS_HISTORY';
 export const SET_SESSION_CONTROLLER = 'SET_SESSION_CONTROLLER';
 export const CLAIM_PRESENTER = 'CLAIM_PRESENTER';
+export const SET_SESSION_LIST = 'SET_SESSION_LIST';
 
 /**
  * Action Creators
@@ -45,4 +46,9 @@ export const setSessionController = controller => ({
 
 export const claimPresenter = () => ({
   type: CLAIM_PRESENTER
+});
+
+export const setSessionList = list => ({
+  type: SET_SESSION_LIST,
+  list
 });

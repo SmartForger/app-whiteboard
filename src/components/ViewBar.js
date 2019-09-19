@@ -1,10 +1,12 @@
 import React from 'react';
-import TogglePanelButton from './TogglePanelButton';
 import Zoom from './Zoom';
+import ParticipantsButton from './ParticipantsButton';
+import WhiteboardsButton from './WhiteboardsButton';
 
 const ViewBar = () => (
   <div className="view-bar">
-    <TogglePanelButton />
+    <WhiteboardsButton />
+    <ParticipantsButton />
     <Zoom />
   </div>
 );

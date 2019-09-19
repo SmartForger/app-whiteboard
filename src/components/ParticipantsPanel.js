@@ -1,35 +1,42 @@
 import React from 'react';
-import cls from 'classnames';
 import { connect } from 'react-redux';
-import { Typography, IconButton, Button } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { Button } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
-import { claimPresenter } from '../store/actions';
+import PersonIcon from '@material-ui/icons/Person';
+import { claimPresenter, setRightPanel } from '../store/actions';
 
-const ParticipantsPanel = ({ users, active, claimControl, open }) => (
-  <div className={cls('participants-panel', { closed: !open })}>
-    <div className="participants-header">
-      <Typography variant="subtitle1">Participants</Typography>
-      <Typography variant="body2">({users ? users.length : 0})</Typography>
-      <IconButton size="small">
-        <AddIcon />
-      </IconButton>
+const ParticipantsPanel = ({ users, active, claimControl, setPanel }) => (
+  <div className="participants-panel panel">
+    <div className="panel-header">
+      <span className="title">Participants</span>
     </div>
-    <div className="participants-container">
+    <div className="panel-body">
       {users &&
         users.map(p => (
-          <div key={p.userId} className="participant">
-            <div
-              className="participant-color"
-              style={{ backgroundColor: p.color }}
-            />
-            <Typography variant="body1">{p.userName}</Typography>
-            {p.userId === active && <EditIcon fontSize="small" />}
+          <div key={p.userId} className="list-item">
+            <div className="list-icon">
+              <div className="icon-bg" style={{ backgroundColor: p.color }} />
+              <PersonIcon style={{ color: p.color }} />
+            </div>
+            <div className="content">
+              <div className="title">{p.userName}</div>
+            </div>
+            {p.userId === active && (
+              <EditIcon fontSize="small" className="edit-icon" />
+            )}
           </div>
         ))}
-    </div>
-    <div className="participants-footer">
       <Button
+        className="default-button"
+        variant="contained"
+        onClick={() => setPanel(3)}
+      >
+        Add Participant
+      </Button>
+    </div>
+    <div className="panel-footer">
+      <Button
+        className="flat-primary"
         variant="contained"
         color="primary"
         onClick={() => claimControl()}
@@ -47,7 +54,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  claimControl: () => dispatch(claimPresenter())
+  claimControl: () => dispatch(claimPresenter()),
+  setPanel: panel => dispatch(setRightPanel(panel))
 });
 
 export default connect(

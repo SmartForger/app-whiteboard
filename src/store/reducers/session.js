@@ -4,7 +4,8 @@ import {
   REMOVE_SESSION_USER,
   SET_ACTIVE_USER,
   SET_CANVAS_HISTORY,
-  SET_SESSION_CONTROLLER
+  SET_SESSION_CONTROLLER,
+  SET_SESSION_LIST
 } from '../actions';
 
 const initialState = {
@@ -12,7 +13,8 @@ const initialState = {
   active: '',
   users: [],
   history: null,
-  controller: null
+  controller: null,
+  list: []
 };
 
 const addUser = (state, user) => {
@@ -58,6 +60,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         controller: action.controller
+      };
+
+    case SET_SESSION_LIST:
+      return {
+        ...state,
+        list: action.list
       };
 
     default:
