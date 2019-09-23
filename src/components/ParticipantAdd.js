@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import InputField from './InputField';
-import { Button, Checkbox } from '@material-ui/core';
+import { Button, Checkbox, LinearProgress } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ArrowUpIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownIcon from '@material-ui/icons/ArrowDownward';
 import PersonIcon from '@material-ui/icons/Person';
-import { setRightPanel } from '../store/actions';
+import { inviteUsers } from '../store/actions';
 
 const UserListItem = ({ user, selected, onClick }) => (
   <div className="list-item" onClick={onClick}>
@@ -61,7 +61,7 @@ class ParticipantAdd extends Component {
 
   render() {
     const { search, sortDir, selected } = this.state;
-    const { setRightPanel, users } = this.props;
+    const { users, inviteUsers, loading } = this.props;
 
     const searchExp = new RegExp(search, 'i');
 
@@ -81,6 +81,7 @@ class ParticipantAdd extends Component {
         <div className="panel-header">
           <span className="title">Add participants</span>
         </div>
+        {loading && <LinearProgress />}
         <div className="panel-body">
           <InputField
             className="search-input"
@@ -121,7 +122,9 @@ class ParticipantAdd extends Component {
             className="flat-primary"
             variant="contained"
             color="primary"
-            onClick={() => setRightPanel(2)}
+            onClick={() => {
+              inviteUsers(selected);
+            }}
             disabled={selected.length === 0}
           >
             Invite participants
@@ -133,6 +136,7 @@ class ParticipantAdd extends Component {
 }
 
 const mapStateToProps = state => ({
+  loading: state.ui.loading,
   // users: []
   users: [
     {
@@ -155,7 +159,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  setRightPanel: panel => dispatch(setRightPanel(panel))
+  inviteUsers: users => dispatch(inviteUsers(users))
 });
 
 export default connect(

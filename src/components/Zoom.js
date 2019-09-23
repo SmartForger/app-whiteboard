@@ -22,7 +22,7 @@ const Zoom = ({ zoom, setZoom, tool, selectPan }) => {
       <IconButton
         size="small"
         onClick={() => {
-          setZoom(Math.max(1, zoom - 0.5));
+          setZoom(Math.max(0.5, zoom - 0.5));
         }}
       >
         <MinimizeIcon className="minimize-icon" />

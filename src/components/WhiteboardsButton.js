@@ -5,16 +5,16 @@ import { Paper, IconButton } from '@material-ui/core';
 import LayersIcon from '@material-ui/icons/Layers';
 import { setRightPanel } from '../store/actions';
 
-const WhiteboardsButton = ({ setPanel, rightPanel }) => (
+const WhiteboardsButton = ({ setPanel, view }) => (
   <Paper
     className={cls('round-button', {
-      selected: rightPanel === 1 || rightPanel === 4
+      selected: view === 1 || view === 4
     })}
   >
     <IconButton
       size="small"
       onClick={() => {
-        setPanel(rightPanel === 1 ? 0 : 1);
+        setPanel(view === 1 ? 0 : 1);
       }}
     >
       <LayersIcon />
@@ -23,7 +23,7 @@ const WhiteboardsButton = ({ setPanel, rightPanel }) => (
 );
 
 const mapStateToProps = state => ({
-  rightPanel: state.ui.rightPanel
+  view: state.panel.view
 });
 
 const mapDispatchToProps = dispatch => ({

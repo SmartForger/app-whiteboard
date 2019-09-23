@@ -7,7 +7,7 @@ import {
   SET_SELECTED_COLOR
 } from '../actions';
 import { fabric } from 'fabric';
-import { saveHistory, disableControl } from './utils';
+import { saveHistory, hasControl } from './utils';
 
 function handleMouseUp({ pointer }) {
   if (!this.textPoint && this.getZoom() === 1) {
@@ -50,12 +50,11 @@ function handleInputBlur() {
 function* selectTool(action) {
   const {
     canvas: { instance, textSize, color },
-    session: { active },
+    session,
     user: { userId }
   } = yield select();
 
-  if (userId !== active) {
-    disableControl(instance);
+  if (!hasControl(session, userId, instance)) {
     return;
   }
 

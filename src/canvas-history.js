@@ -16,8 +16,13 @@ class CanvasHistory {
     this.history = historyArr;
   }
 
-  setHistory(historyObj) {
-    this.history = historyObj;
+  clear() {
+    this.history = [];
+    this.state = CanvasHistory.getDefaultState();
+  }
+
+  setHistory(historyArr) {
+    this.history = historyArr;
     if (this.history.length === 0) {
       return false;
     }
@@ -36,24 +41,25 @@ class CanvasHistory {
   }
 
   addToHistory(data) {
-    if (data) {
-      diffpatcher.patch(this.state, data);
-      this.history.push(data);
-      console.log('differences => ', data);
-      console.log('current state => ', this.history);
-      console.log('history => ', this.state);
+    if (!data || data[0] !== this.history.length || !data[1]) {
+      return false;
     }
-  }
 
-  undo() {
-    if (this.history.length > 0) {
+    if (data[1] === 'undo') {
       let lastDiff = this.history.pop();
       diffpatcher.unpatch(this.state, lastDiff);
-
-      console.log('differences => ', lastDiff);
-      console.log('current state => ', this.state);
-      console.log('history => ', this.history);
+      // console.log('last differences => ', lastDiff);
+      // console.log('current state => ', this.state);
+      // console.log('history => ', this.history);
+    } else {
+      diffpatcher.patch(this.state, data[1]);
+      this.history.push(data[1]);
+      // console.log('differences => ', data[1]);
+      // console.log('current state => ', this.state);
+      // console.log('history => ', this.history);
     }
+
+    return true;
   }
 
   static getDefaultState() {

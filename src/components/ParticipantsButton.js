@@ -4,17 +4,22 @@ import cls from 'classnames';
 import { Paper, IconButton } from '@material-ui/core';
 import PeopleIcon from '@material-ui/icons/People';
 import { setRightPanel } from '../store/actions';
+import { getCurrentSession } from '../store/session-selector';
 
-const ParticipantsButton = ({ setPanel, rightPanel }) => (
+const ParticipantsButton = ({ setPanel, view, isConnected }) => (
   <Paper
     className={cls('round-button', {
-      selected: rightPanel === 2 || rightPanel === 3
+      selected: view === 2 || view === 3
     })}
   >
     <IconButton
       size="small"
       onClick={() => {
-        setPanel(rightPanel === 2 ? 0 : 2);
+        if (isConnected) {
+          setPanel(view === 2 ? 0 : 2);
+        } else {
+          setPanel(1);
+        }
       }}
     >
       <PeopleIcon />
@@ -23,7 +28,8 @@ const ParticipantsButton = ({ setPanel, rightPanel }) => (
 );
 
 const mapStateToProps = state => ({
-  rightPanel: state.ui.rightPanel
+  view: state.panel.view,
+  isConnected: Boolean(getCurrentSession(state.session))
 });
 
 const mapDispatchToProps = dispatch => ({

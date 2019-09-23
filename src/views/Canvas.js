@@ -44,6 +44,10 @@ class Canvas extends Component {
     if (this.props.rightPanelVisible !== nextProps.rightPanelVisible) {
       setTimeout(this.resizeCanvas, 500);
     }
+    if (this.props.zoom !== nextProps.zoom) {
+      this.zoom = nextProps.zoom;
+      this.resizeCanvas();
+    }
   }
 
   componentWillUnmount() {
@@ -56,10 +60,26 @@ class Canvas extends Component {
       return;
     }
 
-    console.log('resize canvas', containerEl.clientWidth, containerEl.clientHeight);
+    const zoom = this.zoom;
 
-    this.canvas.setWidth(containerEl.clientWidth);
-    this.canvas.setHeight(containerEl.clientHeight);
+    console.log(
+      'resize canvas',
+      containerEl.clientWidth,
+      containerEl.clientHeight,
+      zoom
+    );
+
+    if (zoom < 1) {
+      this.canvas.setWidth(containerEl.clientWidth * zoom);
+      this.canvas.setHeight(containerEl.clientHeight * zoom);
+      const tx = containerEl.clientWidth * (1 - zoom) / 2;
+      const ty = containerEl.clientHeight * (1 - zoom) / 2;
+      containerEl.style.transform = `translate(${tx}px, ${ty}px)`;
+    } else {
+      this.canvas.setWidth(containerEl.clientWidth);
+      this.canvas.setHeight(containerEl.clientHeight);
+      containerEl.style.transform = `translate(0px, 0px)`;
+    }
     this.canvas.renderAll();
   }, 500);
 
@@ -85,7 +105,8 @@ class Canvas extends Component {
 
 const mapStateToProps = state => ({
   webComponent: state.component.component,
-  rightPanelVisible: state.ui.rightPanel
+  rightPanelVisible: state.ui.rightPanel,
+  zoom: state.canvas.zoom
 });
 
 const mapDispatchToProps = dispatch => ({

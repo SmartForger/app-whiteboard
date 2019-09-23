@@ -2,24 +2,36 @@ import React from 'react';
 import { connect } from 'react-redux';
 import InputField from './InputField';
 import ChipInput from './ChipInput';
-import { Button } from '@material-ui/core';
-import { setRightPanel } from '../store/actions';
+import { Button, LinearProgress } from '@material-ui/core';
+import {
+  createWhiteBoard,
+  updateWhiteBoard,
+  setBoardTitle,
+  setBoardTags
+} from '../store/actions';
 
-const WhiteboardCreate = ({ setRightPanel }) => {
-  const [name, setName] = React.useState('');
-  const [tags, setTags] = React.useState([]);
-
+const WhiteboardCreate = ({
+  createWhiteBoard,
+  updateWhiteBoard,
+  title,
+  setTitle,
+  tags,
+  setTags,
+  edit,
+  loading
+}) => {
   return (
     <div className="whiteboard-create panel">
       <div className="panel-header">
         <span className="title">White Boards</span>
       </div>
+      {loading && <LinearProgress />}
       <div className="panel-body">
         <InputField
           label="Name"
-          value={name}
+          value={title}
           onChange={ev => {
-            setName(ev.path[0].value);
+            setTitle(ev.path[0].value);
           }}
         />
         <ChipInput label="Metadata tags" value={tags} onChange={setTags} />
@@ -27,20 +39,36 @@ const WhiteboardCreate = ({ setRightPanel }) => {
           className="flat-primary"
           variant="contained"
           color="primary"
-          onClick={() => setRightPanel(1)}
+          onClick={() => {
+            if (edit) {
+              updateWhiteBoard();
+            } else {
+              createWhiteBoard();
+            }
+          }}
         >
-          Launch white board
+          {edit ? 'Update White Board' : 'Launch white board'}
         </Button>
       </div>
     </div>
   );
 };
 
+const mapStateToProps = state => ({
+  title: state.panel.title,
+  tags: state.panel.tags,
+  edit: state.panel.edit,
+  loading: state.ui.loading
+});
+
 const mapDispatchToProps = dispatch => ({
-  setRightPanel: panel => dispatch(setRightPanel(panel))
+  createWhiteBoard: () => dispatch(createWhiteBoard()),
+  updateWhiteBoard: () => dispatch(updateWhiteBoard()),
+  setTitle: title => dispatch(setBoardTitle(title)),
+  setTags: tags => dispatch(setBoardTags(tags))
 });
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(WhiteboardCreate);

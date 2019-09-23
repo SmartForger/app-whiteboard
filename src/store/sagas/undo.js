@@ -1,37 +1,27 @@
 /* eslint-disable require-yield */
 import { takeEvery, select } from 'redux-saga/effects';
-import { UNDO, SET_CANVAS } from '../actions';
-import { loadStateToCanvas, disableControl } from './utils';
+import { UNDO } from '../actions';
+import { loadStateToCanvas, hasControl } from './utils';
 
 function* handleUndo() {
   const {
     canvas: { instance },
-    session: { history, active },
+    session,
     user: { userId }
   } = yield select();
 
-  if (userId !== active) {
-    disableControl(instance);
+  if (!hasControl(session, userId, instance)) {
     return;
   }
 
-  if (history) {
-    history.undo();
-    loadStateToCanvas(instance, history.state);
-    instance._sc.sendData('undo');
+  if (session.history) {
+    const data = [session.history.history.length, 'undo'];
+    instance._sc.sendData(data);
+    session.history.addToHistory(data);
+    loadStateToCanvas(instance, session.history.state);
   }
-}
-
-function* initCanvas({ canvas }) {
-  const {
-    session: { history, controller }
-  } = yield select();
-
-  canvas._sc = controller;
-  canvas.historyObj = history;
 }
 
 export default function* undoSaga() {
   yield takeEvery(UNDO, handleUndo);
-  yield takeEvery(SET_CANVAS, initCanvas);
 }

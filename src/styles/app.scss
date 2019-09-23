@@ -18,6 +18,7 @@
   flex: 1;
   position: relative;
   overflow: hidden;
+  background: #ddd;
 }
 
 .toolbar {
@@ -50,10 +51,8 @@
 }
 
 .viewport {
-  position: absolute;
-  top: 10px;
-  right: 66px;
-  padding: 8px;
+  margin-top: 8px;
+  padding: 5px;
 }
 
 .toolbar,
@@ -97,6 +96,7 @@
 
 .canvas-container {
   z-index: 0;
+  background: #fff;
 }
 
 .expandable {
@@ -231,7 +231,7 @@ canvas,
 
 .minimap {
   position: absolute;
-  top: 65px;
+  top: 10px;
   right: 65px;
   width: 110px;
   height: 96px;
@@ -291,11 +291,24 @@ canvas,
   .panel-header {
     padding: 8px 20px;
     background: #0e8bff;
+    position: relative;
 
     .title {
       color: #fff;
       font-size: 20px;
       line-height: 48px;
+    }
+
+    .MuiIconButton-root {
+      position: absolute;
+      right: 8px;
+      top: 20px;
+      color: white;
+      opacity: 0.5;
+
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
@@ -311,6 +324,16 @@ canvas,
 
       .content {
         flex: 1;
+      }
+
+      .presenter {
+        color: rgba(0, 0, 0, 0.4);
+        font-size: 12px;
+
+        .MuiSvgIcon-root {
+          font-size: 13px;
+          transform: translateY(2px);
+        }
       }
 
       .list-icon {

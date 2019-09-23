@@ -2,14 +2,14 @@ import {
   SET_VIEW,
   SET_CREATE_DIALOG,
   SET_MINIMAP_VISIBLE,
-  SET_RIGHT_PANEL
+  SET_LOADING
 } from '../actions/ui';
 
 const initialState = {
   view: 0,
   createDialogOpen: false,
   minimap: false,
-  rightPanel: 0
+  loading: false
 };
 
 export default (state = initialState, action) => {
@@ -32,10 +32,10 @@ export default (state = initialState, action) => {
         minimap: action.visible
       };
 
-    case SET_RIGHT_PANEL:
+    case SET_LOADING:
       return {
         ...state,
-        rightPanel: action.panel
+        loading: action.loading
       };
 
     default:

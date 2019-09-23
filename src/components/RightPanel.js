@@ -6,17 +6,17 @@ import WhiteboardsPanel from './WhiteboardsPanel';
 import WhiteboardCreate from './WhiteboardCreate';
 import ParticipantAdd from './ParticipantAdd';
 
-const RightPanel = ({ rightPanel }) => (
-  <div className={cls('right-panel', { open: rightPanel !== 0 })}>
-    {rightPanel === 1 && <WhiteboardsPanel />}
-    {rightPanel === 2 && <ParticipantsPanel />}
-    {rightPanel === 3 && <ParticipantAdd />}
-    {rightPanel === 4 && <WhiteboardCreate />}
+const RightPanel = ({ view }) => (
+  <div className={cls('right-panel', { open: view !== 0 })}>
+    {view === 1 && <WhiteboardsPanel />}
+    {view === 2 && <ParticipantsPanel />}
+    {view === 3 && <ParticipantAdd />}
+    {view === 4 && <WhiteboardCreate />}
   </div>
 );
 
 const mapStateToProps = state => ({
-  rightPanel: state.ui.rightPanel
+  view: state.panel.view
 });
 
 export default connect(mapStateToProps)(RightPanel);

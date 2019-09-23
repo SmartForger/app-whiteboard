@@ -1,35 +1,66 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
+import { Button, IconButton } from '@material-ui/core';
+import AirplayIcon from '@material-ui/icons/Airplay';
 import PersonIcon from '@material-ui/icons/Person';
-import { claimPresenter, setRightPanel } from '../store/actions';
+import LeaveIcon from '@material-ui/icons/ExitToApp';
+import {
+  claimPresenter,
+  showParticipantInvite,
+  leaveBoard
+} from '../store/actions';
+import { getCurrentSession } from '../store/session-selector';
 
-const ParticipantsPanel = ({ users, active, claimControl, setPanel }) => (
+const isOnline = (session, userId) =>
+  session.online && session.online.indexOf(userId) >= 0;
+
+const ParticipantsPanel = ({
+  session,
+  userId,
+  claimControl,
+  showInvitePanel,
+  leaveBoard
+}) => (
   <div className="participants-panel panel">
     <div className="panel-header">
       <span className="title">Participants</span>
+      {session.userId !== userId && (
+        <IconButton size="small" onClick={() => leaveBoard()}>
+          <LeaveIcon fontSize="small" />
+        </IconButton>
+      )}
     </div>
     <div className="panel-body">
-      {users &&
-        users.map(p => (
+      {session.users &&
+        session.users.map(p => (
           <div key={p.userId} className="list-item">
             <div className="list-icon">
-              <div className="icon-bg" style={{ backgroundColor: p.color }} />
-              <PersonIcon style={{ color: p.color }} />
+              <div
+                className="icon-bg"
+                style={
+                  isOnline(session, p.userId)
+                    ? { backgroundColor: p.color }
+                    : null
+                }
+              />
+              <PersonIcon
+                style={isOnline(session, p.userId) ? { color: p.color } : null}
+              />
             </div>
             <div className="content">
               <div className="title">{p.userName}</div>
+              {p.userId === session.active && (
+                <div className="presenter">
+                  <AirplayIcon /> Presenter
+                </div>
+              )}
             </div>
-            {p.userId === active && (
-              <EditIcon fontSize="small" className="edit-icon" />
-            )}
           </div>
         ))}
       <Button
         className="default-button"
         variant="contained"
-        onClick={() => setPanel(3)}
+        onClick={() => showInvitePanel(session.docId)}
       >
         Add Participant
       </Button>
@@ -40,6 +71,7 @@ const ParticipantsPanel = ({ users, active, claimControl, setPanel }) => (
         variant="contained"
         color="primary"
         onClick={() => claimControl()}
+        disabled={session.active === userId}
       >
         Claim Presenter
       </Button>
@@ -48,14 +80,15 @@ const ParticipantsPanel = ({ users, active, claimControl, setPanel }) => (
 );
 
 const mapStateToProps = state => ({
-  users: state.session.users,
-  active: state.session.active,
+  session: getCurrentSession(state.session),
+  userId: state.user.userId,
   open: state.ui.rightPanel
 });
 
 const mapDispatchToProps = dispatch => ({
   claimControl: () => dispatch(claimPresenter()),
-  setPanel: panel => dispatch(setRightPanel(panel))
+  showInvitePanel: sessionId => dispatch(showParticipantInvite(sessionId)),
+  leaveBoard: () => dispatch(leaveBoard())
 });
 
 export default connect(

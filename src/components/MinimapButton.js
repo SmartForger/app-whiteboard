@@ -5,7 +5,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import { setMinimapVisible } from '../store/actions';
 
-const Viewport = ({ minimapVisible, showMinimap }) => (
+const MinimapButton = ({ minimapVisible, showMinimap }) => (
   <Paper className="viewport">
     <IconButton
       size="small"
@@ -29,4 +29,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Viewport);
+)(MinimapButton);

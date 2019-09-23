@@ -11,7 +11,8 @@ import {
   setEraserBackground,
   setUser,
   setSessionController,
-  setCanvasHistory
+  setCanvasHistory,
+  getSessionList
 } from './store/actions';
 import SessionController from './session-controller';
 import CanvasHistory from './canvas-history';
@@ -55,21 +56,33 @@ class App extends Component {
       setEraserBackground(this.getBgObj(component.getAttribute('background')))
     );
     component.dispatchEvent(
-      new CustomEvent('onInitCallback', {
+      new CustomEvent('onUserStateCallback', {
         detail: {
           callback: ({ userState }) => {
             this.store.dispatch(
               setUser({
                 userId: userState.userId,
-                userName: userState.userProfile.firstName + ' ' + userState.userProfile.lastName
+                userName:
+                  userState.userProfile.firstName +
+                  ' ' +
+                  userState.userProfile.lastName,
+                token: userState.bearerToken,
+                realm: userState.realm
               })
             );
-            this.store.dispatch(
-              setCanvasHistory(new CanvasHistory([]))
-            );
+          }
+        }
+      })
+    );
+    component.dispatchEvent(
+      new CustomEvent('onInitCallback', {
+        detail: {
+          callback: () => {
+            this.store.dispatch(setCanvasHistory(new CanvasHistory([])));
             this.store.dispatch(
               setSessionController(new SessionController(this.store))
             );
+            this.store.dispatch(getSessionList());
           }
         }
       })

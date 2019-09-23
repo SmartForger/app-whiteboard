@@ -2,7 +2,9 @@ import { SET_USER } from '../actions';
 
 const initialState = {
   userId: '',
-  userName: ''
+  userName: '',
+  realm: '',
+  token: ''
 };
 
 export default (state = initialState, action) => {

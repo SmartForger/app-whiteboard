@@ -1,17 +1,20 @@
 import io from 'socket.io-client';
 import {
-  setSession,
-  addSessionUser,
+  sessionCreated,
+  sessionDeleted,
+  setOnlineUsers,
+  addSessionUsers,
   removeSessionUser,
-  setActiveUser,
-  setSelectedTool
+  setSelectedTool,
+  setActiveUser
 } from './store/actions';
 import { loadStateToCanvas } from './store/sagas/utils';
 
 class SessionController {
   constructor(store) {
     this._store = store;
-    this.socket = io('http://docker.emf360.com:49177');
+    // this.socket = io('http://docker.emf360.com:49177');
+    this.socket = io('http://localhost:49177');
 
     this.init();
   }
@@ -19,32 +22,30 @@ class SessionController {
   init() {
     this.socket.on('connect', () => {
       console.log('socket connected');
-      this.getSessionList();
     });
 
-    this.socket.on('session:list:response', data => {
-      if (data.success && data.sessions[0]) {
-        const session = data.sessions[0];
-        this._store.dispatch(setSession(session));
-        this.connectToSession();
-      }
+    this.socket.on('session_removed', sessionId => {
+      this._store.dispatch(sessionDeleted(sessionId));
     });
 
-    this.socket.on('session:user_connected', data => {
-      if (data.success) {
-        console.log('user connected', data);
-        this._store.dispatch(addSessionUser(data.user));
-      }
+    this.socket.on('online', userIds => {
+      this._store.dispatch(setOnlineUsers(userIds));
     });
 
-    this.socket.on('session:user_left', data => {
-      if (data.success) {
-        this._store.dispatch(removeSessionUser(data.userId));
-      }
+    this.socket.on('users_invited', users => {
+      this._store.dispatch(addSessionUsers(users));
     });
 
-    this.socket.on('session:control:response', data => {
-      if (data.success) {
+    this.socket.on('user_left', userId => {
+      this._store.dispatch(removeSessionUser(userId));
+    });
+
+    this.socket.on('session_invited', session => {
+      this._store.dispatch(sessionCreated(session));
+    });
+
+    this.socket.on('control', data => {
+      if (data.userId) {
         this._store.dispatch(setActiveUser(data.userId));
 
         const {
@@ -54,96 +55,39 @@ class SessionController {
       }
     });
 
-    this.socket.on('session:history', data => {
-      if (data.sessionId) {
-        const {
-          session: { history },
-          canvas: { instance }
-        } = this._store.getState();
-
-        console.log('history from Server', data.history);
-
-        history.setHistory(data.history);
-        loadStateToCanvas(instance, history.state);
-      }
-    });
-
-    this.socket.on('session:data_sent', data => {
+    this.socket.on('draw', ({ data }) => {
       const {
-        user: { userId },
         session: { history },
         canvas: { instance, tool }
       } = this._store.getState();
 
-      if (data.success && data.userId !== userId) {
-        if (data.data === 'undo') {
-          history.undo();
-        } else {
-          history.addToHistory(data.data);
-        }
-
-        console.log('Data received', data);
-
+      if (history.addToHistory(data)) {
         loadStateToCanvas(instance, history.state);
         this._store.dispatch(setSelectedTool(tool));
       }
     });
+
+    this.initSession();
   }
 
-  getSessionList() {
-    this.socket.emit('session:list', { app: 'white-board' });
-  }
-
-  connectToSession() {
+  initSession() {
     const {
-      user: { userId, userName },
-      session: { docId }
+      user: { userId }
     } = this._store.getState();
 
-    this.socket.emit('session:connect', {
-      app: 'white-board',
-      userId,
-      userName,
-      sessionId: docId
-    });
+    this.socket.emit('init', { userId });
   }
 
-  takeControl() {
-    const {
-      user: { userId },
-      session: { docId }
-    } = this._store.getState();
-
-    this.socket.emit('session:control', {
-      app: 'white-board',
-      userId,
-      sessionId: docId
-    });
+  join(sessionId) {
+    this.socket.emit('join', { sessionId });
   }
 
-  leaveBoard() {
-    const {
-      user: { userId },
-      session: { docId }
-    } = this._store.getState();
-
-    this.socket.emit('session:leave', {
-      userId,
-      sessionId: docId
-    });
+  leave(sessionId) {
+    this.socket.emit('leave', { sessionId });
   }
 
   sendData(data) {
-    const {
-      user: { userId },
-      session: { docId }
-    } = this._store.getState();
-
-    this.socket.emit('session:data', {
-      sessionId: docId,
-      userId,
-      data
-    });
+    this.socket.emit('draw', { data });
   }
 }
 

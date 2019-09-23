@@ -3,6 +3,7 @@ import Toolbar from '../components/Toolbar';
 import RefreshButton from '../components/RefreshButton';
 import Canvas from './Canvas';
 import ViewBar from '../components/ViewBar';
+import Minimap from './Minimap';
 import RightPanel from '../components/RightPanel';
 
 const Main = () => (
@@ -12,6 +13,7 @@ const Main = () => (
       <Canvas />
       <ViewBar />
       <RefreshButton />
+      <Minimap />
     </div>
     <RightPanel />
   </div>

@@ -1,3 +1,5 @@
+import { getCurrentSession } from '../session-selector';
+
 export const disableSelection = canvas => {
   canvas.selection = false;
   canvas.forEachObject(function(o) {
@@ -7,11 +9,6 @@ export const disableSelection = canvas => {
   });
   canvas.renderAll();
 };
-
-export const disableControl = canvas => {
-  disableSelection(canvas);
-  canvas.isDrawingMode = false;
-}
 
 export const enableSelection = canvas => {
   canvas.selection = true;
@@ -53,19 +50,34 @@ export const updateMinimapRect = canvas => {
   );
   const zoom = canvas.getZoom();
   const rectEl = minimapEl.querySelector('.minimapRect');
+  const bgEl = minimapEl.querySelector('.minimapBg');
   const ratio = 96 / canvas.height;
 
-  const w = (canvas.width * ratio) / zoom;
-  const h = (canvas.height * ratio) / zoom;
-  const left = (canvas.viewportTransform[4] * ratio) / zoom;
-  const top = (canvas.viewportTransform[5] * ratio) / zoom;
+  if (zoom >= 1) {
+    const w = (canvas.width * ratio) / zoom;
+    const h = (canvas.height * ratio) / zoom;
+    const left = (canvas.viewportTransform[4] * ratio) / zoom;
+    const top = (canvas.viewportTransform[5] * ratio) / zoom;
 
-  rectEl.style = `
-    width: ${w}px;
-    height: ${h}px;
-    left: ${-left}px;
-    top: ${-top}px;
-  `;
+    rectEl.style = `
+      width: ${w}px;
+      height: ${h}px;
+      left: ${-left}px;
+      top: ${-top}px;
+    `;
+    bgEl.style.transform = `translate(0px, 0px)`;
+  } else {
+    const w = canvas.width * ratio;
+    const h = canvas.height * ratio;
+    rectEl.style = `
+      width: ${w}px;
+      height: ${h}px;
+    `;
+
+    const left = w * (1 - zoom) / 2;
+    const top = h * (1 - zoom) / 2;
+    bgEl.style.transform = `translate(${left}px, ${top}px)`;
+  }
 };
 
 export const loadStateToCanvas = (canvas, state) => {
@@ -95,7 +107,7 @@ export const loadStateToCanvas = (canvas, state) => {
         });
       }
     }
-    // renderMinimap(canvas);
+    renderMinimap(canvas);
   });
 };
 
@@ -103,9 +115,25 @@ export const saveHistory = canvas => {
   if (canvas.historyObj) {
     const newState = canvas.toObject(['objType', 'erased']);
     const differences = canvas.historyObj.getDifference(newState);
-    canvas.historyObj.addToHistory(differences);
+    const data = [canvas.historyObj.history.length, differences];
+    canvas.historyObj.addToHistory(data);
     if (differences) {
-      canvas._sc.sendData(differences);
+      canvas._sc.sendData(data);
     }
   }
+};
+
+export const hasControl = (session, userId) => {
+  const _session = getCurrentSession(session);
+  return _session && userId === _session.active;
+};
+
+export const checkControl = (session, userId, canvas) => {
+  if (!hasControl(session, userId)) {
+    disableSelection(canvas);
+    canvas.isDrawingMode = false;
+    return true;
+  }
+
+  return false;
 };
