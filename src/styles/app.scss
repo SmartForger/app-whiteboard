@@ -41,6 +41,7 @@
     color: rgba(0, 0, 0, 0.54);
     font-size: 12px;
     margin-bottom: 8px;
+    text-align: center;
   }
   .minimize-icon {
     transform: translateY(-8px);
@@ -97,6 +98,16 @@
 .canvas-container {
   z-index: 0;
   background: #fff;
+}
+
+.minimapBg {
+  background: #fff;
+  position: absolute;
+  
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .expandable {

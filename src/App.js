@@ -58,7 +58,7 @@ class App extends Component {
     component.dispatchEvent(
       new CustomEvent('onUserStateCallback', {
         detail: {
-          callback: ({ userState }) => {
+          callback: userState => {
             this.store.dispatch(
               setUser({
                 userId: userState.userId,

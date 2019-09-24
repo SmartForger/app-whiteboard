@@ -13,8 +13,8 @@ import { loadStateToCanvas } from './store/sagas/utils';
 class SessionController {
   constructor(store) {
     this._store = store;
-    // this.socket = io('http://docker.emf360.com:49177');
-    this.socket = io('http://localhost:49177');
+    this.socket = io('http://docker.emf360.com:49177');
+    // this.socket = io('http://localhost:49177');
 
     this.init();
   }
@@ -55,7 +55,11 @@ class SessionController {
       }
     });
 
-    this.socket.on('draw', ({ data }) => {
+    this.socket.on('draw', ({data}) => {
+      if (!data) {
+        return;
+      }
+
       const {
         session: { history },
         canvas: { instance, tool }

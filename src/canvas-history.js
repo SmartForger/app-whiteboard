@@ -23,9 +23,6 @@ class CanvasHistory {
 
   setHistory(historyArr) {
     this.history = historyArr;
-    if (this.history.length === 0) {
-      return false;
-    }
 
     const state = CanvasHistory.getDefaultState();
     this.history.forEach(change => {

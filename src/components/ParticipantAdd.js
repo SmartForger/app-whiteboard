@@ -6,7 +6,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import ArrowUpIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownIcon from '@material-ui/icons/ArrowDownward';
 import PersonIcon from '@material-ui/icons/Person';
-import { inviteUsers } from '../store/actions';
+import { inviteUsers, getUsersToInvite } from '../store/actions';
 
 const UserListItem = ({ user, selected, onClick }) => (
   <div className="list-item" onClick={onClick}>
@@ -33,6 +33,10 @@ class ParticipantAdd extends Component {
       sortDir: 'asc',
       selected: []
     };
+  }
+
+  componentDidMount() {
+    this.props.getUsers();
   }
 
   toggleSort = () => {
@@ -137,29 +141,12 @@ class ParticipantAdd extends Component {
 
 const mapStateToProps = state => ({
   loading: state.ui.loading,
-  // users: []
-  users: [
-    {
-      userId: 'afagin',
-      userName: 'Andrew Fagin'
-    },
-    {
-      userId: 'tlarson',
-      userName: 'Travis Larson'
-    },
-    {
-      userId: 'jmarcu',
-      userName: 'James Marcu'
-    },
-    {
-      userId: 'smredman',
-      userName: 'Steven Redman'
-    }
-  ]
+  users: state.panel.users
 });
 
 const mapDispatchToProps = dispatch => ({
-  inviteUsers: users => dispatch(inviteUsers(users))
+  inviteUsers: users => dispatch(inviteUsers(users)),
+  getUsers: () => dispatch(getUsersToInvite())
 });
 
 export default connect(

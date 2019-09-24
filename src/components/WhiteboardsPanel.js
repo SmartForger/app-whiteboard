@@ -14,6 +14,7 @@ import {
   showParticipantInvite
 } from '../store/actions';
 import Menu from '../material-ui/Menu';
+import { getCurrentSession } from '../store/session-selector';
 
 const getTagsLine = tags => {
   const str = tags.join(', ').slice(0, 20);
@@ -111,7 +112,8 @@ class WhiteboardPanel extends Component {
       userId,
       currentSession,
       claimControl,
-      showNewWhiteBoard
+      showNewWhiteBoard,
+      session1
     } = this.props;
 
     return (
@@ -171,6 +173,7 @@ class WhiteboardPanel extends Component {
             variant="contained"
             color="primary"
             onClick={() => claimControl()}
+            disabled={!session1 || session1.active === userId}
           >
             Claim Presenter
           </Button>
@@ -183,7 +186,8 @@ class WhiteboardPanel extends Component {
 const mapStateToProps = state => ({
   userId: state.user.userId,
   list: state.session.list,
-  currentSession: state.session.current
+  currentSession: state.session.current,
+  session1: getCurrentSession(state.session)
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -5,7 +5,8 @@ import {
   SHOW_WHITE_BOARD_CREATE,
   SHOW_PARTICIPANT_INVITE,
   SHOW_PARTICIPANT_PANEL,
-  SET_RIGHT_PANEL
+  SET_RIGHT_PANEL,
+  SET_PANEL_USERS
 } from '../actions';
 
 const initialState = {
@@ -14,7 +15,8 @@ const initialState = {
   title: '',
   sessionId: '',
   tags: [],
-  origin: 0
+  origin: 0,
+  users: []
 };
 
 export default (state = initialState, action) => {
@@ -68,6 +70,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         view: action.panel
+      };
+
+    case SET_PANEL_USERS:
+      return {
+        ...state,
+        users: action.users
       };
 
     default:

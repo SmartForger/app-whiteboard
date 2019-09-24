@@ -1,7 +1,8 @@
 import Axios from 'axios';
 
-// const BASE_URL = 'http://docker.emf360.com:49177/api/v1/stream/realm';
-const BASE_URL = 'http://localhost:49177/api/v1/stream/realm';
+const BASE_URL = 'http://docker.emf360.com:49177/api/v1/stream/realm';
+const KEYCLOAK_URL = 'https://docker.emf360.com:49100/auth/admin/realms';
+// const BASE_URL = 'http://localhost:49177/api/v1/stream/realm';
 
 export const getSessionList = ({ userId, token, realm }) =>
   Axios.get(`${BASE_URL}/${realm}/users/${userId}/sessions`, {
@@ -101,3 +102,10 @@ export const claimControl = ({ userId, token, realm }, sessionId) =>
       }
     }
   );
+
+export const getUsers = ({ token, realm }) =>
+  Axios.get(`${KEYCLOAK_URL}/${realm}/roles/Approved/users`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });

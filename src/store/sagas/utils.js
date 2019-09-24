@@ -25,6 +25,7 @@ export const enableSelection = canvas => {
 
 export const renderMinimap = canvas => {
   const ratio = canvas.width / canvas.height;
+  const zoom = Math.min(canvas.getZoom(), 1);
   const w = Math.floor(96 * ratio);
   const minimapEl = canvas.wrapperEl.parentElement.parentElement.querySelector(
     '.minimap'
@@ -33,7 +34,7 @@ export const renderMinimap = canvas => {
   const bgEl = minimapEl.querySelector('.minimapBg');
 
   const transform = canvas.viewportTransform;
-  canvas.setZoom(1);
+  canvas.setZoom(zoom);
   canvas.viewportTransform[4] = 0;
   canvas.viewportTransform[5] = 0;
   bgEl.innerHTML = canvas.toSVG({
@@ -41,7 +42,12 @@ export const renderMinimap = canvas => {
     height: 96
   });
   canvas.viewportTransform = transform;
-  bgEl.style = `width: ${w}px;height: 96px;`;
+  bgEl.style = `
+width: ${w * zoom}px;
+height: ${96 * zoom}px;
+left: ${(w * (1 - zoom)) / 2}px;
+top: ${48 * (1 - zoom)}px;
+`;
 };
 
 export const updateMinimapRect = canvas => {
@@ -50,7 +56,6 @@ export const updateMinimapRect = canvas => {
   );
   const zoom = canvas.getZoom();
   const rectEl = minimapEl.querySelector('.minimapRect');
-  const bgEl = minimapEl.querySelector('.minimapBg');
   const ratio = 96 / canvas.height;
 
   if (zoom >= 1) {
@@ -65,18 +70,15 @@ export const updateMinimapRect = canvas => {
       left: ${-left}px;
       top: ${-top}px;
     `;
-    bgEl.style.transform = `translate(0px, 0px)`;
   } else {
     const w = canvas.width * ratio;
     const h = canvas.height * ratio;
     rectEl.style = `
       width: ${w}px;
       height: ${h}px;
+      left: 0px;
+      top: 0px;
     `;
-
-    const left = w * (1 - zoom) / 2;
-    const top = h * (1 - zoom) / 2;
-    bgEl.style.transform = `translate(${left}px, ${top}px)`;
   }
 };
 
@@ -117,6 +119,7 @@ export const saveHistory = canvas => {
     const differences = canvas.historyObj.getDifference(newState);
     const data = [canvas.historyObj.history.length, differences];
     canvas.historyObj.addToHistory(data);
+    renderMinimap(canvas);
     if (differences) {
       canvas._sc.sendData(data);
     }

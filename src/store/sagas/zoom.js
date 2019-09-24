@@ -1,7 +1,7 @@
 /* eslint-disable require-yield */
 import { takeEvery, select } from 'redux-saga/effects';
 import { SET_ZOOM, SET_SELECTED_TOOL } from '../actions';
-import { disableSelection, updateMinimapRect } from './utils';
+import { disableSelection, updateMinimapRect, renderMinimap } from './utils';
 
 function* setZoom({ zoom }) {
   const {
@@ -27,6 +27,7 @@ function* setZoom({ zoom }) {
   instance.viewportTransform[5] = ty;
   instance.setZoom(zoom);
   updateMinimapRect(instance);
+  renderMinimap(instance);
 }
 
 function handleMouseDown(opt) {

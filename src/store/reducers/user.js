@@ -1,9 +1,9 @@
 import { SET_USER } from '../actions';
 
 const initialState = {
-  userId: '',
-  userName: '',
-  realm: '',
+  userId: 'tlarson',
+  userName: 'Travis',
+  realm: 'my-realm',
   token: ''
 };
 

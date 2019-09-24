@@ -18,7 +18,9 @@ import {
   setCurrentSession,
   sessionCreated,
   joinSession,
-  setSelectedTool
+  setSelectedTool,
+  GET_USERS_TO_INVITE,
+  setPanelUsers
 } from '../actions';
 import * as API from './api';
 import { loadStateToCanvas, checkControl } from './utils';
@@ -138,9 +140,13 @@ function* joinSessionSaga({ sessionId }) {
   yield put(setCurrentSession(sessionId));
   yield put(showParticipantsPanel());
 
-  const { data } = yield call(API.getHistory, user, sessionId);
-  history.setHistory(data);
-  loadStateToCanvas(instance, history.state);
+  try {
+    const { data } = yield call(API.getHistory, user, sessionId);
+    history.setHistory(data);
+    loadStateToCanvas(instance, history.state);
+  } catch (e) {
+    console.log(e);
+  }
 
   yield put(setSelectedTool(tool));
 }
@@ -192,6 +198,31 @@ function* leaveBoard() {
   yield put(setLoading(false));
 }
 
+function* getUsersSaga() {
+  yield put(setLoading(true));
+
+  const { user } = yield select();
+
+  try {
+    const { data: users } = yield call(API.getUsers, user);
+
+    yield put(
+      setPanelUsers(
+        users
+          .map(u => ({
+            userId: u.id,
+            userName: u.firstName + ' ' + u.lastName
+          }))
+          .filter(u => u.userId !== user.userId)
+      )
+    );
+  } catch (err) {
+    console.log(err);
+  }
+
+  yield put(setLoading(false));
+}
+
 export default function* selectSaga() {
   yield takeEvery(CLAIM_PRESENTER, claimPresenterSaga);
   yield takeEvery(SET_CANVAS, initCanvas);
@@ -202,4 +233,5 @@ export default function* selectSaga() {
   yield takeEvery(JOIN_SESSION, joinSessionSaga);
   yield takeEvery(INVITE_USERS, inviteUsers);
   yield takeEvery(LEAVE_BOARD, leaveBoard);
+  yield takeEvery(GET_USERS_TO_INVITE, getUsersSaga);
 }

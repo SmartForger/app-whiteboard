@@ -8,6 +8,8 @@ export const SHOW_WHITE_BOARD_CREATE = 'SHOW_WHITE_BOARD_CREATE';
 export const SHOW_PARTICIPANT_INVITE = 'SHOW_PARTICIPANT_INVITE';
 export const SHOW_PARTICIPANT_PANEL = 'SHOW_PARTICIPANT_PANEL';
 export const SET_RIGHT_PANEL = 'SET_RIGHT_PANEL';
+export const GET_USERS_TO_INVITE = 'GET_USERS_TO_INVITE';
+export const SET_PANEL_USERS = 'SET_PANEL_USERS';
 
 /**
  * Action Creators
@@ -43,4 +45,13 @@ export const showParticipantsPanel = () => ({
 export const setRightPanel = panel => ({
   type: SET_RIGHT_PANEL,
   panel
+});
+
+export const setPanelUsers = users => ({
+  type: SET_PANEL_USERS,
+  users
+});
+
+export const getUsersToInvite = () => ({
+  type: GET_USERS_TO_INVITE
 });
