@@ -1,6 +1,8 @@
 export default () => {
+  console.log('init GC');
   if (!window.__whiteboardGC) {
     window.__whiteboardGC = setInterval(() => {
+      console.log('checking gc...');
       window.__whiteboardHistory.gc();
       window.__whiteboardSocket.gc();
       if (window.__whiteboardSocket.stores.length === 0) {

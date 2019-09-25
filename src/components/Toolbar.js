@@ -12,6 +12,7 @@ import ShapesButton from './ShapesButton';
 import TextButton from './TextButton';
 import ImageButton from './ImageButton';
 import NoteButton from './NoteButton';
+import { isActivePresenter } from '../store/session-selector';
 
 class Toolbar extends Component {
   constructor(props) {
@@ -46,10 +47,13 @@ class Toolbar extends Component {
 
   render() {
     const { expanded } = this.state;
-    const { selectedTool, insertImage, undo } = this.props;
+    const { selectedTool, insertImage, undo, activePresenter } = this.props;
 
     return (
-      <Paper className="toolbar" elevation={1}>
+      <Paper
+        className={cls('toolbar', { closed: !activePresenter })}
+        elevation={1}
+      >
         <IconButton
           className={cls({ expanded: selectedTool === 1 })}
           size="small"
@@ -100,7 +104,8 @@ class Toolbar extends Component {
 }
 
 const mapStateToProps = state => ({
-  selectedTool: state.canvas.tool
+  selectedTool: state.canvas.tool,
+  activePresenter: isActivePresenter(state)
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -57,7 +57,7 @@ class SessionController {
       }
     });
 
-    this.socket.on('draw', ({ data }) => {
+    this.socket.on('draw', ({ data, userId }) => {
       if (!data) {
         return;
       }
@@ -66,9 +66,13 @@ class SessionController {
 
       if (this.stores[0]) {
         const {
-          canvas: { tool }
+          canvas: { tool },
+          user
         } = this.stores[0].getState();
-        this.dispatchActions(setSelectedTool(tool));
+
+        if (user.userId !== userId) {
+          this.dispatchActions(setSelectedTool(tool));
+        }
       }
     });
   }
@@ -123,7 +127,7 @@ class SessionController {
         component: { component }
       } = store.getState();
 
-      return Boolean(component && component.parentNode);
+      return document.contains(component);
     });
   }
 }

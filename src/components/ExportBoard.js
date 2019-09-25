@@ -1,13 +1,22 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Paper, Button } from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
+import { exportBoard } from '../store/actions';
 
-const ExportBoard = () => (
+const ExportBoard = ({ exportCanvas }) => (
   <Paper className="export-board">
-    <Button size="small">
-      <SaveIcon fontSize="small" /> Export Board
+    <Button size="small" onClick={() => exportCanvas()}>
+      <SaveIcon fontSize="small" /> Export board
     </Button>
   </Paper>
 );
 
-export default ExportBoard;
+const mapDispatchToProps = dispatch => ({
+  exportCanvas: () => dispatch(exportBoard())
+});
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(ExportBoard);

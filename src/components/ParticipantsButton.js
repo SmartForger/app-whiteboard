@@ -14,12 +14,9 @@ const ParticipantsButton = ({ setPanel, view, isConnected }) => (
   >
     <IconButton
       size="small"
+      disabled={!isConnected}
       onClick={() => {
-        if (isConnected) {
-          setPanel(view === 2 ? 0 : 2);
-        } else {
-          setPanel(1);
-        }
+        setPanel(view === 2 ? 0 : 2);
       }}
     >
       <PeopleIcon />

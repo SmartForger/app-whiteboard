@@ -96,6 +96,7 @@ class App extends Component {
     //   })
     // );
     // this.store.dispatch(initBoard());
+    // window.__whiteboardSocket.addStore(this.store);
 
     this.setState({
       jss: create({

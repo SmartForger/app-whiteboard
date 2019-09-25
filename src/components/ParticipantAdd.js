@@ -6,7 +6,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import ArrowUpIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownIcon from '@material-ui/icons/ArrowDownward';
 import PersonIcon from '@material-ui/icons/Person';
-import { inviteUsers, getUsersToInvite } from '../store/actions';
+import { inviteUsers, getUsersToInvite, showPrevPanel } from '../store/actions';
 
 const UserListItem = ({ user, selected, onClick }) => (
   <div className="list-item" onClick={onClick}>
@@ -65,7 +65,7 @@ class ParticipantAdd extends Component {
 
   render() {
     const { search, sortDir, selected } = this.state;
-    const { users, inviteUsers, loading } = this.props;
+    const { users, inviteUsers, loading, showPrevPanel } = this.props;
 
     const searchExp = new RegExp(search, 'i');
 
@@ -121,9 +121,9 @@ class ParticipantAdd extends Component {
             ))}
           </div>
         </div>
-        <div className="panel-footer">
+        <div className="panel-footer flex">
           <Button
-            className="flat-primary"
+            className="flat-primary mr8"
             variant="contained"
             color="primary"
             onClick={() => {
@@ -131,7 +131,14 @@ class ParticipantAdd extends Component {
             }}
             disabled={selected.length === 0}
           >
-            Invite participants
+            Invite users
+          </Button>
+          <Button
+            className="default-button"
+            variant="contained"
+            onClick={() => showPrevPanel()}
+          >
+            Cancel
           </Button>
         </div>
       </div>
@@ -146,7 +153,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   inviteUsers: users => dispatch(inviteUsers(users)),
-  getUsers: () => dispatch(getUsersToInvite())
+  getUsers: () => dispatch(getUsersToInvite()),
+  showPrevPanel: () => dispatch(showPrevPanel())
 });
 
 export default connect(

@@ -16,6 +16,7 @@ export const UNDO = 'UNDO';
 export const INSERT_IMAGE = 'INSERT_IMAGE';
 export const SET_ERASER_BACKGROUND = 'SET_ERASER_BACKGROUND';
 export const REFRESH_BOARD = 'REFRESH_BOARD';
+export const EXPORT_BOARD = 'EXPORT_BOARD';
 
 /**
  * Action Creators
@@ -91,4 +92,8 @@ export const setEraserBackground = data => ({
 
 export const refreshBoard = () => ({
   type: REFRESH_BOARD
+});
+
+export const exportBoard = () => ({
+  type: EXPORT_BOARD
 });

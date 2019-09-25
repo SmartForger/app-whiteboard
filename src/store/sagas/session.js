@@ -171,10 +171,15 @@ function* leaveBoard() {
     canvas: { instance }
   } = yield select();
 
-  const { current, controller } = session;
+  const { current } = session;
   try {
     yield put(setRightPanel(1));
-    yield call(controller.leave.bind(controller), current);
+    if (window.__whiteboardSocket) {
+      window.__whiteboardSocket.leave(current);
+    }
+    if (window.__whiteboardHistory) {
+      window.__whiteboardHistory.setHistory([]);
+    }
     yield call(API.leaveBoard, user, current);
     yield put(sessionDeleted(current));
     yield put(setCurrentSession(''));

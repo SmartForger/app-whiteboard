@@ -74,7 +74,7 @@ class CanvasHistory {
     while (el.parentNode) {
       el = el.parentNode;
     }
-    return Boolean(el.host && el.host.parentNode);
+    return document.contains(el.host);
   }
 
   gc() {
