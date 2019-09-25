@@ -1,7 +1,7 @@
 /* eslint-disable require-yield */
 import { takeEvery, select } from 'redux-saga/effects';
 import { UNDO } from '../actions';
-import { loadStateToCanvas, hasControl } from './utils';
+import { loadStateToCanvas, hasControl } from '../../core/utils';
 
 function* handleUndo() {
   const {

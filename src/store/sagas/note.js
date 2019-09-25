@@ -8,8 +8,12 @@ import {
   SET_SELECTED_COLOR
 } from '../actions';
 import { fabric } from 'fabric';
-import { disableSelection, saveHistory, hasControl } from './utils';
-import { splitAndMeasureBy } from '../../utils';
+import {
+  disableSelection,
+  saveHistory,
+  hasControl,
+  splitAndMeasureBy
+} from '../../core/utils';
 
 function handleMouseDown({ pointer }) {
   if (!this.note && this.getZoom() === 1) {
@@ -121,7 +125,7 @@ function handleInputBlur() {
 
 function handleDbClick({ target }) {
   if (target && target.objType === 'note' && !target.erased) {
-  this.note = target._objects[0];
+    this.note = target._objects[0];
     target._restoreObjectsState();
     this.rect = {
       left: this.note.left,

@@ -1,7 +1,11 @@
 import { takeEvery, select, put } from 'redux-saga/effects';
 import { REFRESH_BOARD, setSelectedTool } from '../actions';
-import CanvasHistory from '../../canvas-history';
-import { loadStateToCanvas, saveHistory, hasControl } from './utils';
+import {
+  loadStateToCanvas,
+  saveHistory,
+  hasControl,
+  canvasInitialState
+} from '../../core/utils';
 
 function* handleRefresh() {
   const {
@@ -14,7 +18,7 @@ function* handleRefresh() {
     return;
   }
 
-  loadStateToCanvas(instance, CanvasHistory.getDefaultState());
+  loadStateToCanvas(instance, canvasInitialState());
   yield put(setSelectedTool(tool));
   saveHistory(instance);
 }

@@ -21,6 +21,7 @@ export const SET_ONLINE_USERS = 'SET_ONLINE_USERS';
 export const INVITE_USERS = 'INVITE_USERS';
 export const LEAVE_BOARD = 'LEAVE_BOARD';
 export const SET_CURRENT_SESSION = 'SET_CURRENT_SESSION';
+export const INIT_BOARD = 'INIT_BOARD';
 
 /**
  * Action Creators
@@ -114,4 +115,9 @@ export const leaveBoard = () => ({
 export const setCurrentSession = sessionId => ({
   type: SET_CURRENT_SESSION,
   sessionId
+});
+
+export const initBoard = store => ({
+  type: INIT_BOARD,
+  store
 });

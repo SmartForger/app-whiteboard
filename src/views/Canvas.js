@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { fabric } from 'fabric';
 import { setCanvas, deleteObject } from '../store/actions';
 import { throttle } from 'lodash';
-import { renderMinimap, updateMinimapRect } from '../store/sagas/utils';
+import { renderMinimap, updateMinimapRect } from '../core/utils';
 
 class Canvas extends Component {
   constructor(props) {
@@ -73,13 +73,6 @@ class Canvas extends Component {
     }
 
     const zoom = this.zoom;
-
-    console.log(
-      'resize canvas',
-      containerEl.clientWidth,
-      containerEl.clientHeight,
-      zoom
-    );
 
     if (zoom < 1) {
       this.canvas.setWidth(containerEl.clientWidth * zoom);

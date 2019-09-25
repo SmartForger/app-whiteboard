@@ -7,7 +7,7 @@ import {
   SET_PEN_SIZE,
   SET_SELECTED_COLOR
 } from '../actions';
-import { disableSelection, saveHistory, hasControl } from './utils';
+import { disableSelection, saveHistory, hasControl } from '../../core/utils';
 
 function calcDistance(p0, p1) {
   return Math.sqrt(Math.pow(p0[1] - p1[1], 2) + Math.pow(p0[2] - p1[2], 2));

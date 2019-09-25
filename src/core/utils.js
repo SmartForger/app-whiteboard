@@ -1,4 +1,4 @@
-import { getCurrentSession } from '../session-selector';
+import { getCurrentSession } from '../store/session-selector';
 
 export const disableSelection = canvas => {
   canvas.selection = false;
@@ -114,14 +114,18 @@ export const loadStateToCanvas = (canvas, state) => {
 };
 
 export const saveHistory = canvas => {
-  if (canvas.historyObj) {
+  if (window.__whiteboardHistory) {
     const newState = canvas.toObject(['objType', 'erased']);
-    const differences = canvas.historyObj.getDifference(newState);
-    const data = [canvas.historyObj.history.length, differences];
-    canvas.historyObj.addToHistory(data);
+
+    const historyObj = window.__whiteboardHistory;
+
+    const differences = historyObj.getDifference(newState);
+    const data = [historyObj.history.length, differences];
+    historyObj.addToHistory(data, canvas);
     renderMinimap(canvas);
+
     if (differences) {
-      canvas._sc.sendData(data);
+      window.__whiteboardSocket.sendData(data);
     }
   }
 };
@@ -133,10 +137,59 @@ export const hasControl = (session, userId) => {
 
 export const checkControl = (session, userId, canvas) => {
   if (!hasControl(session, userId)) {
-    disableSelection(canvas);
-    canvas.isDrawingMode = false;
+    if (canvas) {
+      disableSelection(canvas);
+      canvas.isDrawingMode = false;
+    }
     return true;
   }
 
   return false;
+};
+
+export const splitAndMeasureBy = (ftext, line, width, splitChar) => {
+  let splitted = [];
+  let words = line.split(splitChar);
+  let prevTempLine = '';
+  let tempLine = '';
+
+  for (let i = 0; i < words.length; i++) {
+    tempLine += tempLine ? splitChar + words[i] : words[i];
+    ftext.set({
+      text: tempLine
+    });
+    let m = ftext.measureLine(0);
+    if (m.width >= width) {
+      if (prevTempLine === '' && splitChar !== '') {
+        splitted = [
+          ...splitted,
+          ...splitAndMeasureBy(ftext, tempLine, width, '')
+        ];
+      } else if (prevTempLine !== '') {
+        splitted.push(prevTempLine);
+        i--;
+      } else {
+        splitted.push(tempLine);
+      }
+
+      tempLine = '';
+    } else if (m.width === width) {
+      splitted.push(tempLine);
+    }
+
+    prevTempLine = tempLine;
+  }
+
+  if (prevTempLine) {
+    splitted.push(prevTempLine);
+  }
+
+  return splitted;
+};
+
+export const canvasInitialState = () => {
+  return {
+    version: '3.4.0',
+    objects: []
+  };
 };

@@ -10,12 +10,11 @@ import {
   setComponent,
   setEraserBackground,
   setUser,
-  setSessionController,
-  setCanvasHistory,
-  getSessionList
+  initBoard
 } from './store/actions';
-import SessionController from './session-controller';
-import CanvasHistory from './canvas-history';
+import initSocket from './core/socket';
+import initCanvasHistory from './core/canvas-history';
+import initGC from './core/gc';
 
 class App extends Component {
   constructor(props) {
@@ -26,6 +25,9 @@ class App extends Component {
       theme: null
     };
     this.store = initStore();
+    initSocket();
+    initCanvasHistory();
+    initGC();
   }
 
   render() {
@@ -78,15 +80,22 @@ class App extends Component {
       new CustomEvent('onInitCallback', {
         detail: {
           callback: () => {
-            this.store.dispatch(setCanvasHistory(new CanvasHistory([])));
-            this.store.dispatch(
-              setSessionController(new SessionController(this.store))
-            );
-            this.store.dispatch(getSessionList());
+            this.store.dispatch(initBoard());
+            window.__whiteboardSocket.addStore(this.store);
           }
         }
       })
     );
+
+    // const user = window.location.search.substr(6).split(',');
+    // this.store.dispatch(
+    //   setUser({
+    //     userId: user[0],
+    //     userName: user[1],
+    //     realm: 'my-realm'
+    //   })
+    // );
+    // this.store.dispatch(initBoard());
 
     this.setState({
       jss: create({

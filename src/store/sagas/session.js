@@ -1,7 +1,6 @@
 import { takeEvery, select, put, call } from 'redux-saga/effects';
 import {
   CLAIM_PRESENTER,
-  SET_CANVAS,
   GET_SESSION_LIST,
   setLoading,
   setSessionList,
@@ -20,19 +19,11 @@ import {
   joinSession,
   setSelectedTool,
   GET_USERS_TO_INVITE,
-  setPanelUsers
+  setPanelUsers,
+  INIT_BOARD
 } from '../actions';
-import * as API from './api';
-import { loadStateToCanvas, checkControl } from './utils';
-
-function* initCanvas({ canvas }) {
-  const {
-    session: { history, controller }
-  } = yield select();
-
-  canvas._sc = controller;
-  canvas.historyObj = history;
-}
+import * as API from '../../core/api';
+import { checkControl } from '../../core/utils';
 
 function* claimPresenterSaga() {
   const {
@@ -128,26 +119,24 @@ function* deleteWhiteBoardSaga({ sessionId }) {
 function* joinSessionSaga({ sessionId }) {
   const {
     user,
-    session,
-    canvas: { instance, tool }
+    session: { current },
+    canvas: { tool }
   } = yield select();
 
-  const { controller, current, history } = session;
   if (current) {
-    yield call(controller.leave.bind(controller), current);
+    window.__whiteboardSocket.leave(current);
   }
-  yield call(controller.join.bind(controller), sessionId);
-  yield put(setCurrentSession(sessionId));
+  window.__whiteboardSocket.join(sessionId);
   yield put(showParticipantsPanel());
 
+  yield put(setLoading(true));
   try {
     const { data } = yield call(API.getHistory, user, sessionId);
-    history.setHistory(data);
-    loadStateToCanvas(instance, history.state);
+    window.__whiteboardHistory.setHistory(data);
   } catch (e) {
     console.log(e);
   }
-
+  yield put(setLoading(false));
   yield put(setSelectedTool(tool));
 }
 
@@ -223,9 +212,25 @@ function* getUsersSaga() {
   yield put(setLoading(false));
 }
 
+function* initBoardSaga() {
+  let store = window.__whiteboardSocket.stores[0] || null;
+
+  if (store) {
+    const {
+      session: { list, current },
+      canvas: { tool }
+    } = store.getState();
+
+    yield put(setSessionList(list));
+    yield put(setCurrentSession(current));
+    yield put(setSelectedTool(tool));
+  } else {
+    yield call(getSessionListSaga);
+  }
+}
+
 export default function* selectSaga() {
   yield takeEvery(CLAIM_PRESENTER, claimPresenterSaga);
-  yield takeEvery(SET_CANVAS, initCanvas);
   yield takeEvery(GET_SESSION_LIST, getSessionListSaga);
   yield takeEvery(CREATE_WHITE_BOARD, createWhiteBoardSaga);
   yield takeEvery(UPDATE_WHITE_BOARD, updateWhiteBoardSaga);
@@ -234,4 +239,5 @@ export default function* selectSaga() {
   yield takeEvery(INVITE_USERS, inviteUsers);
   yield takeEvery(LEAVE_BOARD, leaveBoard);
   yield takeEvery(GET_USERS_TO_INVITE, getUsersSaga);
+  yield takeEvery(INIT_BOARD, initBoardSaga);
 }

@@ -7,7 +7,7 @@ import {
   SET_SELECTED_COLOR
 } from '../actions';
 import { fabric } from 'fabric';
-import { saveHistory, hasControl } from './utils';
+import { saveHistory, hasControl } from '../../core/utils';
 
 function handleMouseUp({ pointer }) {
   if (!this.textPoint && this.getZoom() === 1) {

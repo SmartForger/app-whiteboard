@@ -8,7 +8,7 @@ import {
   SET_ERASER_SIZE,
   SET_ERASER_BACKGROUND
 } from '../actions';
-import { disableSelection, saveHistory, hasControl } from './utils';
+import { disableSelection, saveHistory, hasControl } from '../../core/utils';
 
 function handlePathCreated({ path }) {
   path.set({

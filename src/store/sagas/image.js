@@ -2,7 +2,7 @@
 import { takeEvery, select } from 'redux-saga/effects';
 import { INSERT_IMAGE } from '../actions';
 import { fabric } from 'fabric';
-import { saveHistory, hasControl } from './utils';
+import { saveHistory, hasControl } from '../../core/utils';
 
 function* handleInsertImage(action) {
   const {

@@ -1,7 +1,7 @@
 /* eslint-disable require-yield */
 import { takeEvery, select } from 'redux-saga/effects';
 import { SET_ZOOM, SET_SELECTED_TOOL } from '../actions';
-import { disableSelection, updateMinimapRect, renderMinimap } from './utils';
+import { disableSelection, updateMinimapRect, renderMinimap } from '../../core/utils';
 
 function* setZoom({ zoom }) {
   const {

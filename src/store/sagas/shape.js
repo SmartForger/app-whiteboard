@@ -7,7 +7,7 @@ import {
   SET_SELECTED_COLOR,
   SET_SHAPE_STROKE_SIZE
 } from '../actions';
-import { disableSelection, saveHistory, hasControl } from './utils';
+import { disableSelection, saveHistory, hasControl } from '../../core/utils';
 
 function handleMouseDown({ e }) {
   var pointer = this.getPointer(e);
