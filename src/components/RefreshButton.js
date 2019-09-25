@@ -5,7 +5,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import { refreshBoard } from '../store/actions';
 
 const RefreshButton = ({ refresh }) => (
-  <Paper className="refresh-button">
+  <Paper className="refresh-button round-button">
     <IconButton size="small" onClick={refresh}>
       <RefreshIcon />
     </IconButton>

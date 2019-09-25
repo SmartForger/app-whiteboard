@@ -1,9 +1,10 @@
 import React from 'react';
 import Toolbar from '../components/Toolbar';
 import RefreshButton from '../components/RefreshButton';
-import ParticipantsPanel from '../components/ParticipantsPanel';
 import Canvas from './Canvas';
 import ViewBar from '../components/ViewBar';
+import Minimap from './Minimap';
+import RightPanel from '../components/RightPanel';
 
 const Main = () => (
   <div className="app-main">
@@ -12,22 +13,9 @@ const Main = () => (
       <Canvas />
       <ViewBar />
       <RefreshButton />
+      <Minimap />
     </div>
-    <ParticipantsPanel
-      participants={[
-        {
-          id: 'afagin',
-          color: '#000',
-          name: 'Andrew Fagin'
-        },
-        {
-          id: 'tlarson',
-          color: '#f00',
-          name: 'Travis Larson'
-        }
-      ]}
-      active="afagin"
-    />
+    <RightPanel />
   </div>
 );
 

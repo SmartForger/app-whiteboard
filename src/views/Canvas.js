@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { fabric } from 'fabric';
 import { setCanvas, deleteObject } from '../store/actions';
 import { throttle } from 'lodash';
+import { renderMinimap, updateMinimapRect } from '../core/utils';
 
 class Canvas extends Component {
   constructor(props) {
@@ -10,6 +11,7 @@ class Canvas extends Component {
 
     this.canvasRef = React.createRef();
     this.containerRef = React.createRef();
+    this.zoom = 1;
   }
 
   componentDidMount() {
@@ -41,8 +43,22 @@ class Canvas extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.rightPanelVisible !== nextProps.rightPanelVisible) {
+    const isPanelToggled =
+      (this.props.rightPanel === 0 && nextProps.rightPanel > 0) ||
+      (this.props.rightPanel > 0 && nextProps.rightPanel === 0);
+
+    if (isPanelToggled) {
       setTimeout(this.resizeCanvas, 500);
+    }
+
+    const canvasSizeChanged =
+      this.props.zoom !== nextProps.zoom &&
+      ((this.props.zoom < 1 && nextProps.zoom >= 1) ||
+        (this.props.zoom >= 1 && nextProps.zoom < 1));
+
+    if (canvasSizeChanged) {
+      this.zoom = nextProps.zoom;
+      this.resizeCanvas();
     }
   }
 
@@ -56,11 +72,23 @@ class Canvas extends Component {
       return;
     }
 
-    console.log('resize canvas', containerEl.clientWidth, containerEl.clientHeight);
+    const zoom = this.zoom;
 
-    this.canvas.setWidth(containerEl.clientWidth);
-    this.canvas.setHeight(containerEl.clientHeight);
+    if (zoom < 1) {
+      this.canvas.setWidth(containerEl.clientWidth * zoom);
+      this.canvas.setHeight(containerEl.clientHeight * zoom);
+      const tx = (containerEl.clientWidth * (1 - zoom)) / 2;
+      const ty = (containerEl.clientHeight * (1 - zoom)) / 2;
+      containerEl.style.transform = `translate(${tx}px, ${ty}px)`;
+    } else {
+      this.canvas.setWidth(containerEl.clientWidth);
+      this.canvas.setHeight(containerEl.clientHeight);
+      containerEl.style.transform = `translate(0px, 0px)`;
+    }
     this.canvas.renderAll();
+
+    renderMinimap(this.canvas);
+    updateMinimapRect(this.canvas);
   }, 500);
 
   handleKeyUp = ev => {
@@ -85,7 +113,8 @@ class Canvas extends Component {
 
 const mapStateToProps = state => ({
   webComponent: state.component.component,
-  rightPanelVisible: state.ui.rightPanel
+  rightPanel: state.panel.view,
+  zoom: state.canvas.zoom
 });
 
 const mapDispatchToProps = dispatch => ({

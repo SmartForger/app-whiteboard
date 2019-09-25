@@ -1,11 +1,15 @@
 import React from 'react';
-import TogglePanelButton from './TogglePanelButton';
 import Zoom from './Zoom';
+import ParticipantsButton from './ParticipantsButton';
+import WhiteboardsButton from './WhiteboardsButton';
+import MinimapButton from './MinimapButton';
 
 const ViewBar = () => (
   <div className="view-bar">
-    <TogglePanelButton />
+    <WhiteboardsButton />
+    <ParticipantsButton />
     <Zoom />
+    <MinimapButton />
   </div>
 );
 

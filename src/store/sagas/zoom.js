@@ -1,7 +1,7 @@
 /* eslint-disable require-yield */
 import { takeEvery, select } from 'redux-saga/effects';
 import { SET_ZOOM, SET_SELECTED_TOOL } from '../actions';
-import { disableSelection } from './utils';
+import { disableSelection, updateMinimapRect, renderMinimap } from '../../core/utils';
 
 function* setZoom({ zoom }) {
   const {
@@ -11,13 +11,13 @@ function* setZoom({ zoom }) {
   let tx = instance.viewportTransform[4];
   let ty = instance.viewportTransform[5];
 
-  if (tx > 0) {
+  if (tx > 0 || zoom < 1) {
     tx = 0;
   } else if (tx < instance.width * (1 - zoom)) {
     tx = instance.width * (1 - zoom);
   }
 
-  if (ty > 0) {
+  if (ty > 0 || zoom < 1) {
     ty = 0;
   } else if (ty < instance.height * (1 - zoom)) {
     ty = instance.height * (1 - zoom);
@@ -26,7 +26,8 @@ function* setZoom({ zoom }) {
   instance.viewportTransform[4] = tx;
   instance.viewportTransform[5] = ty;
   instance.setZoom(zoom);
-  // updateMinimapRect(instance);
+  updateMinimapRect(instance);
+  renderMinimap(instance);
 }
 
 function handleMouseDown(opt) {
@@ -38,9 +39,13 @@ function handleMouseDown(opt) {
 
 function handleMouseMove({ e }) {
   if (this.isDragging) {
+    const zoom = this.getZoom();
+    if (zoom <= 1) {
+      return;
+    }
+
     let tx = this.viewportTransform[4] + e.clientX - this.lastPosX;
     let ty = this.viewportTransform[5] + e.clientY - this.lastPosY;
-    const zoom = this.getZoom();
 
     if (tx > 0) {
       tx = 0;
@@ -65,7 +70,7 @@ function handleMouseMove({ e }) {
 
 function handleMouseUp() {
   this.isDragging = false;
-  // updateMinimapRect(this);
+  updateMinimapRect(this);
 }
 
 function* selectTool(action) {

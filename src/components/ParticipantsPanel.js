@@ -1,38 +1,77 @@
 import React from 'react';
-import cls from 'classnames';
 import { connect } from 'react-redux';
-import { Typography, IconButton, Button } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
-import { claimPresenter } from '../store/actions';
+import { Button, IconButton } from '@material-ui/core';
+import AirplayIcon from '@material-ui/icons/Airplay';
+import PersonIcon from '@material-ui/icons/Person';
+import LeaveIcon from '@material-ui/icons/ExitToApp';
+import {
+  claimPresenter,
+  showParticipantInvite,
+  leaveBoard
+} from '../store/actions';
+import { getCurrentSession } from '../store/session-selector';
 
-const ParticipantsPanel = ({ users, active, claimControl, open }) => (
-  <div className={cls('participants-panel', { closed: !open })}>
-    <div className="participants-header">
-      <Typography variant="subtitle1">Participants</Typography>
-      <Typography variant="body2">({users ? users.length : 0})</Typography>
-      <IconButton size="small">
-        <AddIcon />
-      </IconButton>
+const isOnline = (session, userId) =>
+  session.online && session.online.indexOf(userId) >= 0;
+
+const ParticipantsPanel = ({
+  session,
+  userId,
+  claimControl,
+  showInvitePanel,
+  leaveBoard
+}) => (
+  <div className="participants-panel panel">
+    <div className="panel-header">
+      <span className="title">Participants</span>
+      {session.userId !== userId && (
+        <IconButton size="small" onClick={() => leaveBoard()}>
+          <LeaveIcon fontSize="small" />
+        </IconButton>
+      )}
     </div>
-    <div className="participants-container">
-      {users &&
-        users.map(p => (
-          <div key={p.userId} className="participant">
-            <div
-              className="participant-color"
-              style={{ backgroundColor: p.color }}
-            />
-            <Typography variant="body1">{p.userName}</Typography>
-            {p.userId === active && <EditIcon fontSize="small" />}
+    <div className="panel-body">
+      {session.users &&
+        session.users.map(p => (
+          <div key={p.userId} className="list-item">
+            <div className="list-icon">
+              <div
+                className="icon-bg"
+                style={
+                  isOnline(session, p.userId)
+                    ? { backgroundColor: p.color }
+                    : null
+                }
+              />
+              <PersonIcon
+                style={isOnline(session, p.userId) ? { color: p.color } : null}
+              />
+            </div>
+            <div className="content">
+              <div className="title">{p.userName}</div>
+              {p.userId === session.active && (
+                <div className="presenter">
+                  <AirplayIcon /> Presenter
+                </div>
+              )}
+            </div>
           </div>
         ))}
-    </div>
-    <div className="participants-footer">
       <Button
+        className="default-button"
+        variant="contained"
+        onClick={() => showInvitePanel(session.docId)}
+      >
+        Add Participant
+      </Button>
+    </div>
+    <div className="panel-footer">
+      <Button
+        className="flat-primary"
         variant="contained"
         color="primary"
         onClick={() => claimControl()}
+        disabled={session.active === userId}
       >
         Claim Presenter
       </Button>
@@ -41,13 +80,15 @@ const ParticipantsPanel = ({ users, active, claimControl, open }) => (
 );
 
 const mapStateToProps = state => ({
-  users: state.session.users,
-  active: state.session.active,
+  session: getCurrentSession(state.session),
+  userId: state.user.userId,
   open: state.ui.rightPanel
 });
 
 const mapDispatchToProps = dispatch => ({
-  claimControl: () => dispatch(claimPresenter())
+  claimControl: () => dispatch(claimPresenter()),
+  showInvitePanel: sessionId => dispatch(showParticipantInvite(sessionId)),
+  leaveBoard: () => dispatch(leaveBoard())
 });
 
 export default connect(

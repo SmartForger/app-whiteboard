@@ -2,17 +2,16 @@
 import { takeEvery, select } from 'redux-saga/effects';
 import { INSERT_IMAGE } from '../actions';
 import { fabric } from 'fabric';
-import { saveHistory, disableControl } from './utils';
+import { saveHistory, hasControl } from '../../core/utils';
 
 function* handleInsertImage(action) {
   const {
     canvas: { instance },
-    session: { active },
+    session,
     user: { userId }
   } = yield select();
 
-  if (userId !== active) {
-    disableControl(instance);
+  if (!hasControl(session, userId, instance)) {
     return;
   }
 
