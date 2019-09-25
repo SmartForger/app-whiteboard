@@ -5,6 +5,7 @@ import Canvas from './Canvas';
 import ViewBar from '../components/ViewBar';
 import Minimap from './Minimap';
 import RightPanel from '../components/RightPanel';
+import ExportBoard from '../components/ExportBoard';
 
 const Main = () => (
   <div className="app-main">
@@ -14,6 +15,7 @@ const Main = () => (
       <ViewBar />
       <RefreshButton />
       <Minimap />
+      <ExportBoard />
     </div>
     <RightPanel />
   </div>

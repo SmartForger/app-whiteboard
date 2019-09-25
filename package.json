@@ -11,6 +11,7 @@
     "classnames": "^2.2.6",
     "debounce": "^1.2.0",
     "fabric": "^3.4.0",
+    "file-saver": "^2.0.2",
     "jsondiffpatch": "^0.3.11",
     "jss-plugin-isolate": "^10.0.0-alpha.7",
     "moment": "^2.24.0",

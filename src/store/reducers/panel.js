@@ -6,7 +6,8 @@ import {
   SHOW_PARTICIPANT_INVITE,
   SHOW_PARTICIPANT_PANEL,
   SET_RIGHT_PANEL,
-  SET_PANEL_USERS
+  SET_PANEL_USERS,
+  SHOW_PREV_PANEL
 } from '../actions';
 
 const initialState = {
@@ -76,6 +77,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         users: action.users
+      };
+
+    case SHOW_PREV_PANEL:
+      return {
+        ...state,
+        view: state.origin
       };
 
     default:

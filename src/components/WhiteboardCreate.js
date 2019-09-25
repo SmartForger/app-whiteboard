@@ -7,12 +7,14 @@ import {
   createWhiteBoard,
   updateWhiteBoard,
   setBoardTitle,
-  setBoardTags
+  setBoardTags,
+  setRightPanel
 } from '../store/actions';
 
 const WhiteboardCreate = ({
   createWhiteBoard,
   updateWhiteBoard,
+  showWhiteboardPanel,
   title,
   setTitle,
   tags,
@@ -35,20 +37,29 @@ const WhiteboardCreate = ({
           }}
         />
         <ChipInput label="Metadata tags" value={tags} onChange={setTags} />
-        <Button
-          className="flat-primary"
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            if (edit) {
-              updateWhiteBoard();
-            } else {
-              createWhiteBoard();
-            }
-          }}
-        >
-          {edit ? 'Update White Board' : 'Launch white board'}
-        </Button>
+        <div className="flex">
+          <Button
+            className="flat-primary mr8"
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              if (edit) {
+                updateWhiteBoard();
+              } else {
+                createWhiteBoard();
+              }
+            }}
+          >
+            {edit ? 'Update board' : 'Launch board'}
+          </Button>
+          <Button
+            className="default-button"
+            variant="contained"
+            onClick={() => showWhiteboardPanel()}
+          >
+            Cancel
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -65,7 +76,8 @@ const mapDispatchToProps = dispatch => ({
   createWhiteBoard: () => dispatch(createWhiteBoard()),
   updateWhiteBoard: () => dispatch(updateWhiteBoard()),
   setTitle: title => dispatch(setBoardTitle(title)),
-  setTags: tags => dispatch(setBoardTags(tags))
+  setTags: tags => dispatch(setBoardTags(tags)),
+  showWhiteboardPanel: () => dispatch(setRightPanel(1))
 });
 
 export default connect(

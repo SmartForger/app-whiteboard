@@ -10,6 +10,7 @@ export const SHOW_PARTICIPANT_PANEL = 'SHOW_PARTICIPANT_PANEL';
 export const SET_RIGHT_PANEL = 'SET_RIGHT_PANEL';
 export const GET_USERS_TO_INVITE = 'GET_USERS_TO_INVITE';
 export const SET_PANEL_USERS = 'SET_PANEL_USERS';
+export const SHOW_PREV_PANEL = 'SHOW_PREV_PANEL';
 
 /**
  * Action Creators
@@ -55,3 +56,7 @@ export const setPanelUsers = users => ({
 export const getUsersToInvite = () => ({
   type: GET_USERS_TO_INVITE
 });
+
+export const showPrevPanel = () => ({
+  type: SHOW_PREV_PANEL
+})
