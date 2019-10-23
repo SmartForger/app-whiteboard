@@ -12,7 +12,7 @@ import {
 
 class SessionController {
   constructor() {
-    this.socket = io('http://docker.emf360.com:49177');
+    this.socket = io('https://pcte.opendash360.com/streaming-service');
     // this.socket = io('http://localhost:49177');
     this.stores = [];
 
