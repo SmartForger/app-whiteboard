@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-const BASE_URL = 'http://docker.emf360.com:49177/api/v1/stream/realm';
+const BASE_URL = 'https://pcte.opendash360.com/streaming-service/api/v1/stream/realm';
 const KEYCLOAK_URL = 'https://docker.emf360.com:49100/auth/admin/realms';
 // const BASE_URL = 'http://localhost:49177/api/v1/stream/realm';
 
