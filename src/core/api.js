@@ -1,8 +1,13 @@
 import Axios from 'axios';
 
-const BASE_URL = `${window.__whiteboardBaseUrl}/streaming-service/api/v1/stream/realm`;
-const KEYCLOAK_URL = `${window.__whiteboardSSOUrl}auth/admin/realms`;
+let BASE_URL = `${window.__whiteboardBaseUrl}/streaming-service/api/v1/stream/realm`;
+let KEYCLOAK_URL = `${window.__whiteboardSSOUrl}auth/admin/realms`;
 // const BASE_URL = 'http://localhost:49177/api/v1/stream/realm';
+
+export const setBaseURLs = (service, sso) => {
+  BASE_URL = `${service}/streaming-service/api/v1/stream/realm`;
+  KEYCLOAK_URL = `${sso}auth/admin/realms`;
+}
 
 export const getSessionList = ({ userId, token, realm }) =>
   Axios.get(`${BASE_URL}/${realm}/users/${userId}/sessions`, {

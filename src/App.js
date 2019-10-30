@@ -15,6 +15,7 @@ import {
 import initSocket from './core/socket';
 import initCanvasHistory from './core/canvas-history';
 import initGC from './core/gc';
+import { setBaseURLs } from './core/api';
 
 class App extends Component {
   constructor(props) {
@@ -25,9 +26,6 @@ class App extends Component {
       theme: null
     };
     this.store = initStore();
-    initSocket();
-    initCanvasHistory();
-    initGC();
   }
 
   render() {
@@ -80,8 +78,14 @@ class App extends Component {
       new CustomEvent('onInitCallback', {
         detail: {
           callback: init => {
-            window.__whiteboardBaseUrl = init.coreServices.appsServiceConnection.split('/apps-service')[0];
-            window.__whiteboardSSOUrl = init.coreServices.ssoConnection;
+            const serviceUrl = init.coreServices.appsServiceConnection.split(
+              '/apps-service'
+            )[0];
+            const ssoUrl = init.coreServices.ssoConnection;
+            initSocket(serviceUrl);
+            setBaseURLs(serviceUrl, ssoUrl);
+            initCanvasHistory();
+            initGC();
             this.store.dispatch(initBoard());
             window.__whiteboardSocket.addStore(this.store);
           }

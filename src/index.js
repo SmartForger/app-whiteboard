@@ -3,6 +3,6 @@ import App from './App';
 import createWebComponent from './react-web-component';
 import './styles/app.scss';
 
-if (!customElements.get('white-board-widget16')) {
-  createWebComponent(<App />, 'white-board-widget16');
+if (!customElements.get('white-board-widget22')) {
+  createWebComponent(<App />, 'white-board-widget22');
 }
