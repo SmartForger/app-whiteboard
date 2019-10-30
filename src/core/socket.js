@@ -12,7 +12,7 @@ import {
 
 class SessionController {
   constructor() {
-    this.socket = io('https://pcte.opendash360.com', {
+    this.socket = io(window.__whiteboardBaseUrl, {
       path: '/streaming-service/socket.io'
     });
     // this.socket = io('http://localhost:49177');
