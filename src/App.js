@@ -79,7 +79,9 @@ class App extends Component {
     component.dispatchEvent(
       new CustomEvent('onInitCallback', {
         detail: {
-          callback: () => {
+          callback: init => {
+            window.__whiteboardBaseUrl = init.coreServices.appsServiceConnection.split('/apps-service')[0];
+            window.__whiteboardSSOUrl = init.coreServices.ssoConnection;
             this.store.dispatch(initBoard());
             window.__whiteboardSocket.addStore(this.store);
           }
