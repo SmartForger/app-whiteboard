@@ -11,8 +11,8 @@ import {
 } from '../store/actions';
 
 class SessionController {
-  constructor() {
-    this.socket = io(window.__whiteboardBaseUrl, {
+  constructor(baseUrl) {
+    this.socket = io(baseUrl, {
       path: '/streaming-service/socket.io'
     });
     // this.socket = io('http://localhost:49177');
@@ -134,8 +134,8 @@ class SessionController {
   }
 }
 
-export default () => {
+export default baseUrl => {
   if (!window.__whiteboardSocket) {
-    window.__whiteboardSocket = new SessionController();
+    window.__whiteboardSocket = new SessionController(baseUrl);
   }
 };
