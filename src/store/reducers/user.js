@@ -1,10 +1,11 @@
-import { SET_USER } from '../actions';
+import { SET_USER, SET_EVENT_ID } from '../actions';
 
 const initialState = {
   userId: '',
   userName: '',
   realm: '',
-  token: ''
+  token: '',
+  eventId: ''
 };
 
 export default (state = initialState, action) => {
@@ -14,6 +15,13 @@ export default (state = initialState, action) => {
         ...state,
         ...action.user
       };
+
+    case SET_EVENT_ID:
+      return {
+        ...state,
+        eventId: action.eventId,
+        userId: state.username
+      }
 
     default:
       return state;
