@@ -9,10 +9,11 @@ export const setBaseURLs = (service, sso) => {
   KEYCLOAK_URL = `${sso}auth/admin/realms`;
 }
 
-export const getSessionList = ({ userId, token, realm }) =>
+export const getSessionList = ({ userId, token, realm, eventId }) =>
   Axios.get(`${BASE_URL}/${realm}/users/${userId}/sessions`, {
     params: {
-      app: 'white-board'
+      app: 'white-board',
+      eventId
     },
     headers: {
       Authorization: `Bearer ${token}`
@@ -20,7 +21,7 @@ export const getSessionList = ({ userId, token, realm }) =>
   });
 
 export const createWhiteBoard = (
-  { userId, userName, token, realm },
+  { userId, userName, token, realm, eventId },
   title,
   tags
 ) =>
@@ -30,7 +31,8 @@ export const createWhiteBoard = (
       app: 'white-board',
       title,
       tags,
-      userName
+      userName,
+      eventId
     },
     {
       headers: {

@@ -44,8 +44,6 @@ function* getSessionListSaga() {
 
   const { user } = yield select();
 
-  console.log('get session list saga', user)
-
   try {
     const { data: sessions } = yield call(API.getSessionList, user);
     yield put(setSessionList(sessions));
