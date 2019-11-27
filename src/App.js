@@ -62,8 +62,9 @@ class App extends Component {
           callback: event => {
             if (event && event.Warden && event.Warden.eventId) {
               this.store.dispatch(setEventId(event.Warden.eventId));
+            } else {
+              this.store.dispatch(setEventId(''));
             }
-            this.store.dispatch(setEventId('some-event-id'));
           }
         }
       })
