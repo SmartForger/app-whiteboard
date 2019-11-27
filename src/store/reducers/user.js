@@ -20,7 +20,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         eventId: action.eventId,
-        userId: state.username
+        userId: action.eventId ? state.username : state.ssoId
       }
 
     default:
