@@ -1,4 +1,4 @@
-import { takeEvery, select, put, call } from 'redux-saga/effects';
+import { take, takeEvery, select, put, call } from 'redux-saga/effects';
 import {
   CLAIM_PRESENTER,
   GET_SESSION_LIST,
@@ -20,7 +20,8 @@ import {
   setSelectedTool,
   GET_USERS_TO_INVITE,
   setPanelUsers,
-  INIT_BOARD
+  INIT_BOARD,
+  SET_EVENT_ID
 } from '../actions';
 import * as API from '../../core/api';
 import { checkControl } from '../../core/utils';
@@ -198,18 +199,9 @@ function* getUsersSaga() {
   const { user } = yield select();
 
   try {
-    const { data: users } = yield call(API.getUsers, user);
+    const users = yield call(API.getUsers, user);
 
-    yield put(
-      setPanelUsers(
-        users
-          .map(u => ({
-            userId: u.id,
-            userName: u.firstName + ' ' + u.lastName
-          }))
-          .filter(u => u.userId !== user.userId)
-      )
-    );
+    yield put(setPanelUsers(users.filter(u => u.userId !== user.userId)));
   } catch (err) {
     console.log(err);
   }
@@ -230,6 +222,7 @@ function* initBoardSaga() {
     yield put(setCurrentSession(current));
     yield put(setSelectedTool(tool));
   } else {
+    yield take(SET_EVENT_ID);
     yield call(getSessionListSaga);
   }
 }

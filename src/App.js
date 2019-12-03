@@ -10,7 +10,8 @@ import {
   setComponent,
   setEraserBackground,
   setUser,
-  initBoard
+  initBoard,
+  setEventId
 } from './store/actions';
 import initSocket from './core/socket';
 import initCanvasHistory from './core/canvas-history';
@@ -56,18 +57,37 @@ class App extends Component {
       setEraserBackground(this.getBgObj(component.getAttribute('background')))
     );
     component.dispatchEvent(
+      new CustomEvent('onSharedRequestsCallback', {
+        detail: {
+          callback: event => {
+            if (event && event.Warden && event.Warden.eventId) {
+              this.store.dispatch(setEventId(event.Warden.eventId));
+            } else {
+              this.store.dispatch(setEventId(''));
+            }
+          }
+        }
+      })
+    );
+    component.dispatchEvent(
       new CustomEvent('onUserStateCallback', {
         detail: {
           callback: userState => {
+            const { user } = this.store.getState();
+
             this.store.dispatch(
               setUser({
-                userId: userState.userId,
+                userId: user.eventId
+                  ? userState.userProfile.username
+                  : userState.userId,
                 userName:
                   userState.userProfile.firstName +
                   ' ' +
                   userState.userProfile.lastName,
                 token: userState.bearerToken,
-                realm: userState.realm
+                realm: userState.realm,
+                ssoId: userState.userId,
+                username: userState.userProfile.username
               })
             );
           }
