@@ -57,19 +57,6 @@ class App extends Component {
       setEraserBackground(this.getBgObj(component.getAttribute('background')))
     );
     component.dispatchEvent(
-      new CustomEvent('onSharedRequestsCallback', {
-        detail: {
-          callback: event => {
-            if (event && event.Warden && event.Warden.eventId) {
-              this.store.dispatch(setEventId(event.Warden.eventId));
-            } else {
-              this.store.dispatch(setEventId(''));
-            }
-          }
-        }
-      })
-    );
-    component.dispatchEvent(
       new CustomEvent('onUserStateCallback', {
         detail: {
           callback: userState => {
@@ -108,6 +95,20 @@ class App extends Component {
             initGC();
             this.store.dispatch(initBoard());
             window.__whiteboardSocket.addStore(this.store);
+          }
+        }
+      })
+    );
+    component.dispatchEvent(
+      new CustomEvent('onSharedRequestsCallback', {
+        detail: {
+          callback: event => {
+            console.log('onSharedRequestsCallback');
+            if (event && event.Warden && event.Warden.eventId) {
+              this.store.dispatch(setEventId(event.Warden.eventId));
+            } else {
+              this.store.dispatch(setEventId(''));
+            }
           }
         }
       })
