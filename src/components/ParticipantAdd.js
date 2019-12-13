@@ -7,6 +7,7 @@ import ArrowUpIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownIcon from '@material-ui/icons/ArrowDownward';
 import PersonIcon from '@material-ui/icons/Person';
 import { inviteUsers, getUsersToInvite, showPrevPanel } from '../store/actions';
+import { getTarget } from '../core/utils';
 
 const UserListItem = ({ user, selected, onClick }) => (
   <div className="list-item" onClick={onClick}>
@@ -93,8 +94,9 @@ class ParticipantAdd extends Component {
             placeholder="Search"
             value={search}
             onChange={ev => {
+              const target = getTarget(ev);
               this.setState({
-                search: ev.path[0].value
+                search: target.value
               });
             }}
           />

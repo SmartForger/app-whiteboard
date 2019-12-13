@@ -10,6 +10,7 @@ import {
   setBoardTags,
   setRightPanel
 } from '../store/actions';
+import { getTarget } from '../core/utils';
 
 const WhiteboardCreate = ({
   createWhiteBoard,
@@ -33,7 +34,8 @@ const WhiteboardCreate = ({
           label="Name"
           value={title}
           onChange={ev => {
-            setTitle(ev.path[0].value);
+            const target = getTarget(ev);
+            setTitle(target.value);
           }}
         />
         <ChipInput label="Metadata tags" value={tags} onChange={setTags} />

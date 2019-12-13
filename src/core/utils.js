@@ -193,3 +193,6 @@ export const canvasInitialState = () => {
     objects: []
   };
 };
+
+export const getTarget = event =>
+  event.path ? event.path[0] : event.originalTarget;
