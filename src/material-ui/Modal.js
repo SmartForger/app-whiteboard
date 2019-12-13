@@ -16,6 +16,7 @@ import ModalManager, { ariaHidden } from '@material-ui/core/Modal/ModalManager';
 import TrapFocus from '@material-ui/core/Modal/TrapFocus';
 import SimpleBackdrop from '@material-ui/core/Modal/SimpleBackdrop';
 import { removeTransform, restoreTransform } from './transform-patch';
+import { getTarget } from '../core/utils';
 
 function getContainer(container) {
   container = typeof container === 'function' ? container() : container;
@@ -183,7 +184,8 @@ const Modal = React.forwardRef(function Modal(props, ref) {
   };
 
   const handleBackdropClick = event => {
-    if (event.target !== event.path[0]) {
+    const target =  getTarget(event);
+    if (event.target !== target) {
       return;
     }
 

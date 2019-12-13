@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Chip } from '@material-ui/core';
+import { getTarget } from '../core/utils';
 
 class ChipInput extends Component {
   constructor(props) {
@@ -55,8 +56,9 @@ class ChipInput extends Component {
             }
           }}
           onChange={ev => {
+            const target = getTarget(ev);
             this.setState({
-              inputVal: ev.path[0].value
+              inputVal: target.value
             });
           }}
         />
