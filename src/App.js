@@ -103,9 +103,8 @@ class App extends Component {
       new CustomEvent('onSharedRequestsCallback', {
         detail: {
           callback: event => {
-            console.log('onSharedRequestsCallback');
-            if (event && event.Warden && event.Warden.eventId) {
-              this.store.dispatch(setEventId(event.Warden.eventId));
+            if (event && event.Warden) {
+              this.store.dispatch(setEventId(event.Warden));
             } else {
               this.store.dispatch(setEventId(''));
             }
