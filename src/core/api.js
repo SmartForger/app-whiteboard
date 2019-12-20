@@ -120,7 +120,7 @@ export const getUsers = ({ token, realm, eventId }) => {
       }
     }).then(({ data }) =>
       data.map(u => ({
-        userId: u.key,
+        userId: u.email,
         userName: u.name
       }))
     );

@@ -65,7 +65,7 @@ class App extends Component {
             this.store.dispatch(
               setUser({
                 userId: user.eventId
-                  ? userState.userProfile.username
+                  ? userState.userProfile.email
                   : userState.userId,
                 userName:
                   userState.userProfile.firstName +
@@ -74,7 +74,7 @@ class App extends Component {
                 token: userState.bearerToken,
                 realm: userState.realm,
                 ssoId: userState.userId,
-                username: userState.userProfile.username
+                email: userState.userProfile.email
               })
             );
           }
