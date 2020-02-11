@@ -21,7 +21,8 @@ import {
   GET_USERS_TO_INVITE,
   setPanelUsers,
   INIT_BOARD,
-  SET_EVENT_ID
+  SET_EVENT_ID,
+  SESSION_REMOVED
 } from '../actions';
 import * as API from '../../core/api';
 import { checkControl } from '../../core/utils';
@@ -209,6 +210,26 @@ function* getUsersSaga() {
   yield put(setLoading(false));
 }
 
+function* handleSessionRemoved({ sessionId }) {
+  const {
+    session,
+    user,
+    instance
+  } = yield select();
+  const { current } = session;
+
+  if (current === sessionId) {
+    yield put(setRightPanel(1));
+  }
+
+  yield put(sessionDeleted(sessionId));
+
+  if (current === sessionId) {
+    yield put(setCurrentSession(''));
+    checkControl(session, user.userId, instance);
+  }
+}
+
 function* initBoardSaga() {
   let store = window.__whiteboardSocket.stores[0] || null;
 
@@ -238,4 +259,5 @@ export default function* selectSaga() {
   yield takeEvery(LEAVE_BOARD, leaveBoard);
   yield takeEvery(GET_USERS_TO_INVITE, getUsersSaga);
   yield takeEvery(INIT_BOARD, initBoardSaga);
+  yield takeEvery(SESSION_REMOVED, handleSessionRemoved);
 }

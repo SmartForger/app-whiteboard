@@ -15,6 +15,7 @@ export const UPDATE_WHITE_BOARD = 'UPDATE_WHITE_BOARD';
 export const DELETE_WHITE_BOARD = 'DELETE_WHITE_BOARD';
 export const SESSION_CREATED = 'SESSION_CREATED';
 export const SESSION_DELETED = 'SESSION_DELETED';
+export const SESSION_REMOVED = 'SESSION_REMOVED';
 export const SESSION_UPDATED = 'SESSION_UPDATED';
 export const JOIN_SESSION = 'JOIN_SESSION';
 export const SET_ONLINE_USERS = 'SET_ONLINE_USERS';
@@ -68,6 +69,11 @@ export const sessionCreated = session => ({
 
 export const sessionDeleted = sessionId => ({
   type: SESSION_DELETED,
+  sessionId
+});
+
+export const sessionRemoved = sessionId => ({
+  type: SESSION_REMOVED,
   sessionId
 });
 

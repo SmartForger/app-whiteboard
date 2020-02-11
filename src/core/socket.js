@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import {
   sessionCreated,
-  sessionDeleted,
+  sessionRemoved,
   setOnlineUsers,
   addSessionUsers,
   removeSessionUser,
@@ -27,7 +27,7 @@ class SessionController {
     });
 
     this.socket.on('session_removed', sessionId => {
-      this.dispatchActions(sessionDeleted(sessionId));
+      this.dispatchActions(sessionRemoved(sessionId));
     });
 
     this.socket.on('online', userIds => {
