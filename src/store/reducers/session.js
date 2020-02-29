@@ -45,8 +45,9 @@ const addUsers = (state, users) => {
   };
 };
 
-const removeUser = (state, userId) => {
-  const session = getCurrentSession(state);
+const removeUser = (state, { userId, sessionId }) => {
+  const sId = sessionId || state.current;
+  const session = state.list.find(s => s.docId === sId);
 
   if (!session) {
     return state;
@@ -107,7 +108,7 @@ export default (state = initialState, action) => {
       return addUsers(state, action.users);
 
     case REMOVE_SESSION_USER:
-      return removeUser(state, action.userId);
+      return removeUser(state, action);
 
     case SET_ACTIVE_USER:
       return updateSession(state, {

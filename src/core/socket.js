@@ -7,7 +7,10 @@ import {
   removeSessionUser,
   setSelectedTool,
   setActiveUser,
-  setCurrentSession
+  setCurrentSession,
+  sessionUpdated,
+  setRightPanel,
+  clearBoard
 } from '../store/actions';
 
 class SessionController {
@@ -44,6 +47,29 @@ class SessionController {
 
     this.socket.on('session_invited', session => {
       this.dispatchActions(sessionCreated(session));
+    });
+
+    this.socket.on('owner_changed', payload => {
+      if (this.stores[0]) {
+        const {
+          user: { userId },
+          session: { current }
+        } = this.stores[0].getState();
+
+        if (current === payload.sessionId && payload.from === userId) {
+          this.dispatchActions(setRightPanel(1));
+          this.dispatchActions(setCurrentSession(''));
+          this.dispatchActions(clearBoard());
+        }
+      }
+
+      this.dispatchActions(removeSessionUser(payload.from, payload.sessionId));
+      this.dispatchActions(
+        sessionUpdated({
+          docId: payload.sessionId,
+          userId: payload.to
+        })
+      );
     });
 
     this.socket.on('control', data => {

@@ -16,7 +16,7 @@ import {
 import initSocket from './core/socket';
 import initCanvasHistory from './core/canvas-history';
 import initGC from './core/gc';
-import { setBaseURLs } from './core/api';
+import { setBaseURLs, getUsers } from './core/api';
 
 class App extends Component {
   constructor(props) {
@@ -24,16 +24,18 @@ class App extends Component {
 
     this.state = {
       jss: null,
-      theme: null
+      theme: null,
+      shouldRender: true // For local development, 'true' in production
     };
     this.store = initStore();
   }
 
   render() {
-    const { jss, theme } = this.state;
+    const { jss, theme, shouldRender } = this.state;
 
     return (
-      jss && (
+      jss &&
+      shouldRender && (
         <StylesProvider jss={jss}>
           <ThemeProvider theme={theme}>
             <Provider store={this.store}>
@@ -103,26 +105,11 @@ class App extends Component {
       new CustomEvent('onSharedRequestsCallback', {
         detail: {
           callback: event => {
-            if (event && event.Warden) {
-              this.store.dispatch(setEventId(event.Warden));
-            } else {
-              this.store.dispatch(setEventId(''));
-            }
+            this.setEvent(event);
           }
         }
       })
     );
-
-    // const user = window.location.search.substr(6).split(',');
-    // this.store.dispatch(
-    //   setUser({
-    //     userId: user[0],
-    //     userName: user[1],
-    //     realm: 'my-realm'
-    //   })
-    // );
-    // this.store.dispatch(initBoard());
-    // window.__whiteboardSocket.addStore(this.store);
 
     this.setState({
       jss: create({
@@ -147,6 +134,15 @@ class App extends Component {
         }
       })
     });
+
+    // For local development, disable on production
+    // document.addEventListener('od360_token_updated', ev => {
+    //   if (!this.state.shouldRender) {
+    //     this.localInit(ev.detail.token);
+    //   } else {
+    //     this.localSetToken(ev.detail.token);
+    //   }
+    // });
   }
 
   webComponentAttributeChanged(attributeName, oldValue, newValue) {
@@ -174,6 +170,69 @@ class App extends Component {
       type: 'base64',
       value: v
     };
+  }
+
+  setEvent(event) {
+    if (event && event.Warden) {
+      const {
+        user: { realm, token, email }
+      } = this.store.getState();
+      getUsers({ token, realm, eventId: event.Warden }).then(users => {
+        const user = users.find(u => u.userId === email);
+        if (user) {
+          this.store.dispatch(setUser({ team: user.team }));
+        }
+        this.store.dispatch(setEventId(event.Warden));
+        window.__whiteboardSocket.initSession();
+      });
+    } else {
+      this.store.dispatch(setEventId(''));
+    }
+  }
+
+  localInit(token) {
+    this.store.dispatch(
+      setUser({
+        userId: '895ccd4e-d705-4e2d-81ea-b2e17f30c63b',
+        userName: 'Andrew Fagin',
+        token,
+        realm: 'my-realm',
+        ssoId: '895ccd4e-d705-4e2d-81ea-b2e17f30c63b',
+        email: 'andrewfagin912@gmail.com'
+      })
+    );
+
+    // this.store.dispatch(
+    //   setUser({
+    //     userId: '1a7ed696-2f8e-4d35-a7d0-61f13afd678a',
+    //     userName: 'Carrington Morehouse',
+    //     token,
+    //     realm: 'my-realm',
+    //     ssoId: '1a7ed696-2f8e-4d35-a7d0-61f13afd678a',
+    //     email: 'cmorehouse@ultimateknowledge.com'
+    //   })
+    // );
+
+    const serviceUrl = 'https://pcte.opendash360.com';
+    const ssoUrl = 'https://sso.opendash360.com/';
+    initSocket(serviceUrl);
+    setBaseURLs(serviceUrl, ssoUrl);
+    initCanvasHistory();
+    initGC();
+    this.store.dispatch(initBoard());
+    window.__whiteboardSocket.addStore(this.store);
+
+    this.setState({ shouldRender: true });
+
+    // event id simulation
+    // this.store.dispatch(setEventId(''));
+    this.setEvent({
+      Warden: 'some-event-id'
+    });
+  }
+
+  localSetToken(token) {
+    this.store.dispatch(setUser({ token }));
   }
 }
 

@@ -5,7 +5,8 @@ const initialState = {
   userName: '',
   realm: '',
   token: '',
-  eventId: ''
+  eventId: '',
+  team: ''
 };
 
 export default (state = initialState, action) => {
