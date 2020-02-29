@@ -12,6 +12,7 @@ import {
   INVITE_USERS,
   showParticipantsPanel,
   LEAVE_BOARD,
+  CLEAR_BOARD,
   sessionUpdated,
   sessionDeleted,
   setCurrentSession,
@@ -194,6 +195,25 @@ function* leaveBoard() {
   yield put(setLoading(false));
 }
 
+function* clearBoard() {
+  const {
+    user,
+    session,
+    canvas: { instance }
+  } = yield select();
+
+  try {
+    yield put(setRightPanel(1));
+    if (window.__whiteboardHistory) {
+      window.__whiteboardHistory.setHistory([]);
+    }
+
+    checkControl(session, user.userId, instance);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 function* getUsersSaga() {
   yield put(setLoading(true));
 
@@ -257,6 +277,7 @@ export default function* selectSaga() {
   yield takeEvery(JOIN_SESSION, joinSessionSaga);
   yield takeEvery(INVITE_USERS, inviteUsers);
   yield takeEvery(LEAVE_BOARD, leaveBoard);
+  yield takeEvery(CLEAR_BOARD, clearBoard);
   yield takeEvery(GET_USERS_TO_INVITE, getUsersSaga);
   yield takeEvery(INIT_BOARD, initBoardSaga);
   yield takeEvery(SESSION_REMOVED, handleSessionRemoved);

@@ -21,6 +21,7 @@ export const JOIN_SESSION = 'JOIN_SESSION';
 export const SET_ONLINE_USERS = 'SET_ONLINE_USERS';
 export const INVITE_USERS = 'INVITE_USERS';
 export const LEAVE_BOARD = 'LEAVE_BOARD';
+export const CLEAR_BOARD = 'CLEAR_BOARD';
 export const SET_CURRENT_SESSION = 'SET_CURRENT_SESSION';
 export const INIT_BOARD = 'INIT_BOARD';
 
@@ -33,9 +34,10 @@ export const addSessionUsers = users => ({
   users
 });
 
-export const removeSessionUser = userId => ({
+export const removeSessionUser = (userId, sessionId) => ({
   type: REMOVE_SESSION_USER,
-  userId
+  userId,
+  sessionId
 });
 
 export const setActiveUser = userId => ({
@@ -116,6 +118,10 @@ export const inviteUsers = users => ({
 
 export const leaveBoard = () => ({
   type: LEAVE_BOARD
+});
+
+export const clearBoard = () => ({
+  type: CLEAR_BOARD
 });
 
 export const setCurrentSession = sessionId => ({
