@@ -201,7 +201,7 @@ function* getUsersSaga() {
   try {
     const users = yield call(API.getUsers, user);
 
-    yield put(setPanelUsers(users.filter(u => u.userId !== user.userId)));
+    yield put(setPanelUsers(users.filter(u => u.email !== user.email)));
   } catch (err) {
     console.log(err);
   }
