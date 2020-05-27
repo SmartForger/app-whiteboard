@@ -32,6 +32,7 @@ class Canvas extends Component {
             detail: {
               callback: () => {
                 this.resizeCanvas();
+                console.log('on resize callback');
               }
             }
           })
@@ -64,6 +65,8 @@ class Canvas extends Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.resizeCanvas);
+    this.canvas.dispose();
+    this.canvas = null;
   }
 
   resizeCanvas = throttle(() => {
@@ -71,24 +74,24 @@ class Canvas extends Component {
     if (!containerEl || !this.canvas) {
       return;
     }
+    try {
+      const zoom = this.zoom;
 
-    const zoom = this.zoom;
+      if (zoom < 1) {
+        this.canvas.setWidth(containerEl.clientWidth * zoom);
+        this.canvas.setHeight(containerEl.clientHeight * zoom);
+        const tx = (containerEl.clientWidth * (1 - zoom)) / 2;
+        const ty = (containerEl.clientHeight * (1 - zoom)) / 2;
+        containerEl.style.transform = `translate(${tx}px, ${ty}px)`;
+      } else {
+        this.canvas.setWidth(containerEl.clientWidth);
+        this.canvas.setHeight(containerEl.clientHeight);
+        containerEl.style.transform = `translate(0px, 0px)`;
+      }
 
-    if (zoom < 1) {
-      this.canvas.setWidth(containerEl.clientWidth * zoom);
-      this.canvas.setHeight(containerEl.clientHeight * zoom);
-      const tx = (containerEl.clientWidth * (1 - zoom)) / 2;
-      const ty = (containerEl.clientHeight * (1 - zoom)) / 2;
-      containerEl.style.transform = `translate(${tx}px, ${ty}px)`;
-    } else {
-      this.canvas.setWidth(containerEl.clientWidth);
-      this.canvas.setHeight(containerEl.clientHeight);
-      containerEl.style.transform = `translate(0px, 0px)`;
-    }
-    this.canvas.renderAll();
-
-    renderMinimap(this.canvas);
-    updateMinimapRect(this.canvas);
+      renderMinimap(this.canvas);
+      updateMinimapRect(this.canvas);
+    } catch (err) { }
   }, 500);
 
   handleKeyUp = ev => {

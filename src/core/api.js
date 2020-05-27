@@ -72,7 +72,6 @@ export const deleteWhiteBoard = ({ userId, token, realm }, sessionId) =>
   });
 
 export const inviteUsers = ({ userId, token, realm }, sessionId, users) =>
-  console.log(users);
   Axios.post(
     `${BASE_URL}/${realm}/users/${userId}/sessions/${sessionId}/invite`,
     { users },
