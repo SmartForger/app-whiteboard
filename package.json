@@ -32,7 +32,7 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "deploy": "yarn build && node after-build.js",
+    "deploy": "npm run build && node after-build.js",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
@@ -52,7 +52,9 @@
     ]
   },
   "devDependencies": {
+    "fs-extra": "^9.0.0",
     "react-app-rewired": "^2.1.3",
-    "react-web-component-style-loader": "^0.1.4-alpha"
+    "react-web-component-style-loader": "^0.1.4-alpha",
+    "uuid4": "^1.1.4"
   }
 }

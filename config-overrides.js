@@ -1,10 +1,14 @@
 module.exports = function override(config, env) {
+  const appName = process.env.APPNAME || 'react-widget-demo';
+  const jsonpFunction = process.env.JSONP_FUNC || 'ukiJsonPReactWidgetDemo';
+  const library = process.env.WEBPACK_LIBRARY || 'ukiLibReactWidgetDemo';
+
   config.output = {
     path: config.output.path,
-    filename: process.env.APPNAME ? `${process.env.APPNAME}.js` : "white-board-widget.js",
+    filename:  `${appName}.js`,
     publicPath: "",
-    jsonpFunction: 'webpackJsonpWhiteBoardWidget',
-    library: 'whiteBoardWidget'  
+    jsonpFunction,
+    library
   };
   delete config.optimization.splitChunks;
   delete config.optimization.runtimeChunk;

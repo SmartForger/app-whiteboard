@@ -1,0 +1,17 @@
+[2020-05-28T03:38:28.180Z] AfterBuild.main :: ----------------------------------------
+[2020-05-28T03:38:28.186Z] AfterBuild.main :: ---     Cleaning Up Asset Bundle     ---
+[2020-05-28T03:38:28.186Z] AfterBuild.main :: ----------------------------------------
+[2020-05-28T03:38:28.186Z] AfterBuild.main :: --- Stripping out unnecessary files  ---
+[2020-05-28T03:38:28.187Z] AfterBuild.main :: ----------------------------------------
+[2020-05-28T03:38:28.187Z] AfterBuild.removeFilesInDirectory :: Removing file [./build/asset-manifest.json]
+[2020-05-28T03:38:28.188Z] AfterBuild.removeFilesInDirectory :: Removing file [./build/favicon.ico]
+[2020-05-28T03:38:28.188Z] AfterBuild.removeFilesInDirectory :: Removing file [./build/index.html]
+[2020-05-28T03:38:28.188Z] AfterBuild.removeFilesInDirectory :: Removing file [./build/manifest.json]
+[2020-05-28T03:38:28.188Z] AfterBuild.removeFilesInDirectory :: Removing file [./build/precache-manifest.acc3cc01563fa84d58f4d539b2850660.js]
+[2020-05-28T03:38:28.188Z] AfterBuild.removeFilesInDirectory :: Removing file [./build/service-worker.js]
+[2020-05-28T03:38:28.189Z] AfterBuild.main :: ------------------------------------------------------------------------------------------------
+[2020-05-28T03:38:28.189Z] AfterBuild.main :: ---                                     Obfuscating Tags                                     ---
+[2020-05-28T03:38:28.189Z] AfterBuild.main :: ------------------------------------------------------------------------------------------------
+[2020-05-28T03:38:28.194Z] AfterBuild.main :: --- This operation prevents collisions between custom element tags provided by third parties ---
+[2020-05-28T03:38:28.194Z] AfterBuild.main :: --- We also protect against some global library reference conflicts during this step         ---
+[2020-05-28T03:38:28.195Z] AfterBuild.main :: ------------------------------------------------------------------------------------------------

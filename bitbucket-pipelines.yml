@@ -1,0 +1,182 @@
+# This pipeline expects the following variables to be set:
+#   - APP_NAME: name of the app being built; can have any characters including spaces
+#   - BUNDLE_NAME: base file name for the final artifact; may consist of alpha-numeric characters as well as dashes (-), periods (.), or underscores (_)
+#   - MATTERMOST_URL: Mattermost webhook URL for posting build results
+#   - CONFLUENCE_BASIC_AUTH: encoded U/P auth header for calling the Confluence Cloud REST API
+#   - BITBUCKET_BASIC_AUTH: encoded U/P auth header for calling the Bitbucket Cloud REST API
+
+image: node:latest
+
+definitions:
+  steps:
+    - step: &build
+        name: Build App
+        caches:
+          - node
+        artifacts:
+          - artifacts/**
+        after-script:
+          # ----------------------
+          # --- Error Checking ---
+          # ----------------------
+          # Prepare the error template
+          - |
+            err_payload=$(cat <<EOF
+            {
+              "text":"#### $APP_NAME",
+              "attachments": [
+                {
+                  "color":"#FF0000",
+                  "title":"Build Summary for $BITBUCKET_REPO_FULL_NAME",
+                  "title_link":"$BITBUCKET_GIT_HTTP_ORIGIN",
+                  "author_name":"Bitbucket Pipeline",
+                  "text":"Failed to bundle App for OpenDash360.",
+                  "fallback":"Build failed for $BITBUCKET_REPO_FULL_NAME",
+                  "fields": [
+                      { "title":"Build Status",       "value":"Failed",                  "short":true },
+                      { "title":"Git Branch",         "value":"$BITBUCKET_BRANCH",       "short":true },
+                      
+                      { "title":"Build Number",       "value":"$BITBUCKET_BUILD_NUMBER", "short":true },
+                      { "title":"Git Commit",         "value":"$BITBUCKET_COMMIT",       "short":true },
+
+                      { "title":"Exit Code",          "value":"$BITBUCKET_EXIT_CODE",    "short":true }
+                  ]
+                }
+              ]
+            }
+            EOF
+            )
+
+          # Test if the step failed, in which case we notify Mattermost of the build failure
+          - >
+            if [[ $BITBUCKET_EXIT_CODE -eq 0 ]]; then
+              exit 0;
+            else
+              echo $err_payload > artifacts/mm_error.json;
+              curl -i -X POST -H 'Content-type:application/json' $MATTERMOST_URL --data-binary @artifacts/mm_error.json;
+            fi
+
+        script:
+          # -----------------
+          # --- Pre-build ---
+          # -----------------
+
+          # Set the branch code (used as a suffix/prefix for some values)
+          - branch=""
+          - |
+            case $BITBUCKET_BRANCH in
+              master ) ;;
+              develop )
+                branch="-dev";;
+              * )
+                branch="-$BITBUCKET_BRANCH";;
+            esac
+
+          # Set up the bundle name using the app name, build number, and branch identifier
+          - bundle_filename=${BUNDLE_NAME}${branch}.tar
+
+          # Set up the artifacts directory
+          - mkdir artifacts
+
+          # Install jq for JSON parsing
+          - apt-get update && apt-get -y install jq
+
+          # -----------------
+          # --- Build App ---
+          # -----------------
+
+          # Stopwatch - START
+          - startime=$(date +%s)
+
+          # Install JavaScript dependencies using package-lock.json
+          - npm install
+
+          # Run the appropriate build script from package.json
+          - npm run deploy
+
+          # Stopwatch - STOP
+          - endtime=$(date +%s)
+
+          # ------------------
+          # --- Post-build ---
+          # ------------------
+
+          # Preserve some metadata for troubleshooting
+          - appversion=$(jq -r .version build/od-manifest.json)
+          - cp package-lock.json artifacts/
+          - cp bundle_app.log artifacts/
+
+          # Compress the build artifacts and send to Confluence
+          - tar cf artifacts/$bundle_filename build/*
+          - curl -D- -X PUT
+            -H "Authorization:Basic $CONFLUENCE_BASIC_AUTH"
+            -H "Content-Type:multipart/form-data"
+            -H "X-Atlassian-Token:no-check;"
+            -F "file=@artifacts/$bundle_filename"
+            -F "minorEdit=true"
+            -F "comment=Version $appversion, Build $BITBUCKET_BUILD_NUMBER, Commit $BITBUCKET_COMMIT"
+            -o artifacts/confluence_upload_result.json
+            https://ukidev.atlassian.net/wiki/rest/api/content/41648137/child/attachment
+
+          # Get the new download link from Confluence
+          - bundle_url="$(jq -r '._links.base + .results[0]._links.download' artifacts/confluence_upload_result.json)"
+          # - bundle_version="$(jq -r .results[0].version.number artifacts/confluence_upload_result.json)"
+
+          # Get commit data from Bitbucket
+          - author="$(curl -X GET -H "Authorization:Basic $BITBUCKET_BASIC_AUTH" https://api.bitbucket.org/2.0/repositories/uki-dev/$BITBUCKET_REPO_SLUG/commit/$BITBUCKET_COMMIT | jq -r .author.raw)"
+          - commit_msg="$(curl -X GET -H "Authorization:Basic $BITBUCKET_BASIC_AUTH" https://api.bitbucket.org/2.0/repositories/uki-dev/$BITBUCKET_REPO_SLUG/commit/$BITBUCKET_COMMIT | jq -r .rendered.message.html)"
+
+          # Update the App version number in Confluence
+          # - oldcontent="$(curl -X GET -H "Authorization:Basic $CONFLUENCE_BASIC_AUTH" https://ukidev.atlassian.net/wiki/rest/api/content/41648137?expand=body.storage,version | jq -r .body.storage.value)"
+          # - changelog=$(echo $oldcontent | sed -r "s/.*World Clock(?:(?!<tr>).)*<td>(.*?)<\/td>(?:<\/tr>).*/$1; $commit_msg/")
+          # - newcontent=$(echo $oldcontent | sed -r "s/<td><p>$APP_NAME<\/p><\/td><td>.*?<\/td><td>.*?<\/td><td>.*?<\/td><td>.*?<\/td>/<td><p>$APP_NAME<\/p><\/td><td>$appversion<\/td><td>$author<\/td><td>$(date +"%d %b %Y")<\/td><td>$commit_msg<\/td>/")
+          # - echo newcontent > artifacts/confluence_update.html
+          # - curl -X PUT
+          #     -H "Authorization:Basic $CONFLUENCE_BASIC_AUTH"
+          #     -d
+          #     https://ukidev.atlassian.net/wiki/rest/api/content/41648137
+
+          # Provide output to Mattermost Chat
+          - |
+            mm_payload=$(cat <<EOF
+            {
+              "text":"#### $APP_NAME $appversion",
+              "attachments": [
+                {
+                  "color":"#00FF00",
+                  "title":"Build Summary for $BITBUCKET_REPO_FULL_NAME",
+                  "title_link":"$BITBUCKET_GIT_HTTP_ORIGIN",
+                  "author_name":"Bitbucket Pipeline",
+                  "text":"App successfully bundled for upload to OpenDash360.",
+                  "fallback":"Build succeeded for $BITBUCKET_REPO_FULL_NAME",
+                  "fields": [
+                    { "title":"Build Status",       "value":"Success",                                           "short":true },
+                    { "title":"Git Branch",         "value":"$BITBUCKET_BRANCH",                                 "short":true },
+                    
+                    { "title":"Build Number",       "value":"$BITBUCKET_BUILD_NUMBER",                           "short":true },
+                    { "title":"Git Commit",         "value":"$BITBUCKET_COMMIT",                                 "short":true },
+                    
+                    { "title":"Build Time (H:m:s)", "value":"$(date -d@$(($endtime - $startime)) -u +%H:%M:%S)", "short":true },
+                    { "title":"Commit Author",      "value":"$author",                                           "short":true },
+                    
+                    { "title":"Bundled Filename",   "value":"$bundle_filename",                                  "short":true },
+                    { "title":"App Version",        "value":"$appversion",                                   "short":true },
+                    
+                    { "title": "Download Link",     "value":"$bundle_url",                                       "short":false }
+                  ]
+                }
+              ]
+            }
+            EOF
+            )
+
+          - echo $mm_payload > artifacts/webhook.json
+
+          - curl -i -X POST -H 'Content-type:application/json' $MATTERMOST_URL --data-binary @artifacts/webhook.json
+
+pipelines:
+  branches:
+    develop:
+      - step: *build
+    master:
+      - step: *build
