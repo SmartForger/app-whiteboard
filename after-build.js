@@ -50,14 +50,14 @@ function removeFilesInDirectory(directory, path = '.') {
 async function obfuscate(buildDirectoryPath) {
   try {
     if (manifest.app && manifest.app.tag && manifest.app.bootstrapModule) {
-      manifest.app.tag = _obfuscateFile(buildDirectoryPath, manifest.app.bootstrapModule, manifest.app.tag);
+      manifest.app.tag = await _obfuscateFile(buildDirectoryPath, manifest.app.bootstrapModule, manifest.app.tag);
 
     } else {
       manifest.app = null;
     }
 
     for (let i = 0; i < manifest.widgets.length; ++i) {
-      manifest.widgets[i].tag = _obfuscateFile(buildDirectoryPath, manifest.widgets[i].bootstrapModule, manifest.widgets[i].tag);
+      manifest.widgets[i].tag = await _obfuscateFile(buildDirectoryPath, manifest.widgets[i].bootstrapModule, manifest.widgets[i].tag);
     }
 
     await fs.writeJSON(path.join(buildDirectoryPath, 'od-manifest.json'), manifest);
@@ -115,4 +115,4 @@ logWrite('AfterBuild.main :: --- This operation prevents collisions between cust
 logWrite('AfterBuild.main :: --- We also protect against some global library reference conflicts during this step         ---');
 logWrite('AfterBuild.main :: ------------------------------------------------------------------------------------------------');
 
-// obfuscate('build');
+obfuscate('build');
