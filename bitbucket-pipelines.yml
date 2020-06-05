@@ -53,7 +53,7 @@ definitions:
               exit 0;
             else
               echo $err_payload > artifacts/mm_error.json;
-              curl -i -X POST -H 'Content-type:application/json' $MATTERMOST_URL --data-binary @artifacts/mm_error.json;
+              curl -i -k -X POST -H 'Content-type:application/json' $MATTERMOST_URL --data-binary @artifacts/mm_error.json;
             fi
 
         script:
@@ -73,7 +73,7 @@ definitions:
             esac
 
           # Set up the bundle name using the app name, build number, and branch identifier
-          - bundle_filename=${BUNDLE_NAME}${branch}.tar
+          - bundle_filename=${BUNDLE_NAME}${branch}.tar.gz
 
           # Set up the artifacts directory
           - mkdir artifacts
@@ -107,7 +107,7 @@ definitions:
           - cp bundle_app.log artifacts/
 
           # Compress the build artifacts and send to Confluence
-          - tar cf artifacts/$bundle_filename build/*
+          - tar czvf artifacts/$bundle_filename --directory="build" .
           - curl -D- -X PUT
             -H "Authorization:Basic $CONFLUENCE_BASIC_AUTH"
             -H "Content-Type:multipart/form-data"
@@ -172,7 +172,7 @@ definitions:
 
           - echo $mm_payload > artifacts/webhook.json
 
-          - curl -i -X POST -H 'Content-type:application/json' $MATTERMOST_URL --data-binary @artifacts/webhook.json
+          - curl -i -k -X POST -H 'Content-type:application/json' $MATTERMOST_URL --data-binary @artifacts/webhook.json
 
 pipelines:
   branches:
